@@ -114,8 +114,6 @@ MIT License — Free to use and modify for personal or professional purposes.
 
 ---
 
----
-
 > ⚠️ **Disclaimer:**  
 > This tool is built for educational and research purposes only.  
 > It does not constitute investment advice. Use data and insights responsibly.

@@ -128,11 +128,8 @@ python "Fibonacci - Non Interactive.py"
 
 ---
 
-
 ## 📜 License
 MIT License — Free to use and modify for personal or professional purposes.
-
----
 
 ---
 

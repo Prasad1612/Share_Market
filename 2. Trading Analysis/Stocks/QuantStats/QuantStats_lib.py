@@ -10,7 +10,7 @@ def fetch_yf_data(symbol, period="1y", interval="1d"):
     """
     Fetch historical OHLCV data from yfinance with clean column handling.
     """
-    df = yf.download(symbol, period=period, interval=interval, auto_adjust=True, progress=False)
+    df = yf.download(symbol, period=period, interval=interval, auto_adjust=False, progress=False)
     df = df.reset_index()
 
     # Flatten MultiIndex columns if any
