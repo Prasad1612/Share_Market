@@ -44,7 +44,6 @@ The dashboard will open in your browser (default: `http://localhost:8501`).
 
 ---
 
-
 ## 📜 License
 MIT License — Free to use and modify for personal or professional purposes.
 
