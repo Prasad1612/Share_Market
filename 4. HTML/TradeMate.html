@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Analyzer & Position Size</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 min-h-screen font-sans selection:bg-blue-500 selection:text-white">
+
+    <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999] hidden transition-opacity duration-300 opacity-0">
+        <div class="bg-slate-800 rounded-xl p-6 shadow-2xl max-w-sm w-11/12 border border-slate-700 transform transition-all duration-300 scale-95">
+            <h3 class="text-xl font-semibold text-red-400 mb-3 flex items-center gap-2">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i> Validation Error
+            </h3>
+            <p id="modal-message" class="text-slate-300 mb-6"></p>
+            <button onclick="hideModal()" class="w-full bg-red-600 hover:bg-red-500 text-white font-medium py-2 rounded-lg transition-colors">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <nav class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 overflow-x-auto">
+                <div class="flex items-center flex-shrink-0 gap-2 pr-4">
+                    <i data-lucide="candlestick-chart" class="text-blue-500 w-8 h-8"></i>
+                    <span class="font-bold text-xl tracking-tight text-white">Trade<span class="text-blue-500">Mate</span></span>
+                </div>
+                <div class="flex space-x-4 text-sm font-medium flex-shrink-0">
+                    <button onclick="showTab('analyzer')" id="btn-analyzer" class="px-3 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-500 transition-colors whitespace-nowrap">Analyzer</button>
+                    <button onclick="showTab('average')" id="btn-average" class="px-3 py-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors whitespace-nowrap">Avg. Price</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
+        
+        <div id="tab-analyzer" class="space-y-6">
+            <div class="bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-700 shadow-xl">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
+                    <div class="p-2 bg-blue-500/10 rounded-lg">
+                        <i data-lucide="sigma" class="text-blue-500 w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-white">Trade Analyzer</h2>
+                        <p class="text-slate-400 text-sm">Input data to instantly view position size and risk metrics.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div class="space-y-4 lg:col-span-1">
+                        <h3 class="text-md font-semibold text-blue-400 border-b border-slate-700 pb-2">Account & Trade Type</h3>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs sm:text-sm font-medium text-slate-400">Trade Direction</label>
+                            <div class="flex bg-slate-700 rounded-lg p-1" oninput="calcTradeAnalyzer()">
+                                <input type="radio" id="trade-buy" name="trade-type" value="buy" class="hidden peer/buy" checked />
+                                <label for="trade-buy"
+                                    class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-white font-medium bg-slate-600 peer-checked/buy:bg-green-600">
+                                    Buy (Long)
+                                </label>
+
+                                <!-- SELL -->
+                                <input type="radio" id="trade-sell" name="trade-type" value="sell" class="hidden peer/sell" />
+                                <label for="trade-sell"
+                                    class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-white font-medium bg-slate-600 peer-checked/sell:bg-red-600">
+                                    Sell (Short)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Total Account Capital (₹)</label>
+                                <input type="number" id="pos-capital" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="100000">
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Risk per Trade (%)</label>
+                                <input type="number" id="pos-risk-percent" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="1">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Intraday Leverage (X)</label>
+                            <input type="number" id="intraday-leverage" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="1" value="1">
+                        </div>
+
+                        <h3 class="text-md font-semibold text-blue-400 border-b border-slate-700 pb-2 pt-4">Trade Setup Prices</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Entry Price</label>
+                                <input type="number" id="pos-entry" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="100">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Stop Loss</label>
+                                    <input type="number" id="pos-sl" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="95">
+                                </div>
+                                 <div>
+                                    <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Target Price</label>
+                                    <input type="number" id="pos-target" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="120">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        
+                        <div class="bg-slate-900/50 rounded-xl p-4 sm:p-6 border border-slate-700 space-y-4">
+                            <h3 class="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                                <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i> Target Profit / Loss
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Target P&L (₹)</p>
+                                    <p id="res-target-profit-amt" class="text-xl font-bold text-green-400 mt-1">0</p>
+                                </div>
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Return (% on Margin Used)</p>
+                                    <p id="res-target-profit-pct-required" class="text-xl font-bold text-green-400 mt-1">0.00%</p>
+                                </div>
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Return (% on Total Capital)</p>
+                                    <p id="res-target-profit-pct-total" class="text-xl font-bold text-green-400 mt-1">0.00%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/50 rounded-xl p-4 sm:p-6 border border-slate-700 space-y-4">
+                            <h3 class="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                                <i data-lucide="credit-card" class="w-5 h-5 text-blue-400"></i>Position Sizing & Margin
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Quantity</p>
+                                    <p id="res-qty" class="text-xl font-bold text-white mt-1">0</p>
+                                </div>
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Max Risk Amt (₹)</p>
+                                    <p id="res-risk-amt" class="text-xl font-bold text-red-400 mt-1">0</p>
+                                </div>
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Risk % (Actual)</p>
+                                    <p id="res-risk-percent-out" class="text-xl font-bold text-red-400 mt-1">0%</p>
+                                </div>
+                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Required Margin (₹)</p>
+                                    <p id="res-capital-req" class="text-xl font-bold text-blue-400 mt-1">0</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/50 rounded-xl p-4 sm:p-6 border border-slate-700 space-y-4">
+                            <h3 class="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
+                                <i data-lucide="scale" class="w-5 h-5 text-purple-400"></i> Risk:Reward Analysis
+                            </h3>
+                            
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Risk/Share</p>
+                                    <p id="rr-risk-val" class="text-xl font-bold text-red-400 mt-1">0.00</p>
+                                </div>
+                                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Reward/Share</p>
+                                    <p id="rr-reward-val" class="text-xl font-bold text-green-400 mt-1">0.00</p>
+                                </div>
+                                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700">
+                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Ratio</p>
+                                    <p id="rr-ratio-val" class="text-xl font-bold text-white mt-1">1 : 0</p>
+                                </div>
+                            </div>
+
+                            <div class="relative h-4 bg-slate-700 rounded-full overflow-hidden w-full mt-4">
+                                <div id="risk-bar" class="absolute left-0 top-0 h-full bg-red-500 transition-all duration-500" style="width: 50%"></div>
+                                <div id="reward-bar" class="absolute right-0 top-0 h-full bg-green-500 transition-all duration-500" style="width: 50%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-500 mt-2 px-1">
+                                <span>SL</span>
+                                <span>Entry</span>
+                                <span>Target</span>
+                            </div>
+                            
+                            <div id="rr-verdict" class="mt-4 text-center py-2 rounded bg-slate-800 text-sm font-medium text-slate-300">
+                                Enter all trade values to see analysis
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-average" class="hidden space-y-6">
+            <div class="bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-700 shadow-xl">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
+                    <div class="p-2 bg-emerald-500/10 rounded-lg">
+                        <i data-lucide="layers" class="text-emerald-500 w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-white">Average Price Calculator</h2>
+                        <p class="text-slate-400 text-sm">Calculate weighted average price for 2 entries.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700 relative">
+                            <span class="absolute -top-2.5 left-3 bg-slate-800 text-xs text-emerald-400 px-2 border border-slate-700 rounded">First Entry (Original)</span>
+                            <div class="grid grid-cols-2 gap-4 mt-1">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Price</label>
+                                    <input type="number" id="avg-p1" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="100">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Quantity</label>
+                                    <input type="number" id="avg-q1" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700 relative">
+                            <span class="absolute -top-2.5 left-3 bg-slate-800 text-xs text-emerald-400 px-2 border border-slate-700 rounded">Second Entry</span>
+                            <div class="grid grid-cols-2 gap-4 mt-1">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Price</label>
+                                    <input type="number" id="avg-p2" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="90">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Quantity</label>
+                                    <input type="number" id="avg-q2" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="calcAverage()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-lg transition-all shadow-lg shadow-emerald-500/20">
+                            Calculate Average
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col justify-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 p-4 sm:p-6 text-center">
+                        <h3 class="text-slate-400 text-sm uppercase tracking-wider mb-2">New Weighted Average Price</h3>
+                        <div class="flex items-baseline justify-center gap-1 mb-6">
+                            <span class="text-lg text-slate-400">₹</span>
+                            <span id="avg-result-price" class="text-4xl font-bold text-white">0.00</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 border-t border-slate-700 pt-4">
+                            <div>
+                                <p class="text-xs text-slate-500">Total Quantity</p>
+                                <p id="avg-result-qty" class="text-lg font-semibold text-slate-200">0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500">Total Invested</p>
+                                <p id="avg-result-invested" class="text-lg font-semibold text-slate-200">₹0</p>
+                            </div>
+                        </div>
+                        <div id="avg-breakeven" class="mt-4 text-sm font-medium text-slate-300">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-4xl mx-auto text-center py-6 text-slate-600 text-sm">
+        <p>A specialized toolkit for Indian Share Market Traders</p>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Custom Modal Functions (Replacing alert())
+        const modal = document.getElementById('custom-modal');
+        const modalMessage = document.getElementById('modal-message');
+
+        function showModal(message) {
+            modalMessage.innerText = message;
+            modal.classList.remove('hidden', 'opacity-0');
+            modal.classList.add('opacity-100');
+            lucide.createIcons();
+        }
+
+        function hideModal() {
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Tab Switching Logic
+        function showTab(tabName) {
+            const tabIds = ['tab-analyzer', 'tab-average'];
+            const buttonIds = ['btn-analyzer', 'btn-average'];
+
+            tabIds.forEach(id => document.getElementById(id).classList.add('hidden'));
+
+            buttonIds.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                btn.classList.remove('bg-blue-600', 'text-white', 'bg-slate-700');
+                btn.classList.add('text-slate-400');
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            activeBtn.classList.remove('text-slate-400');
+            if(tabName === 'analyzer') {
+                 activeBtn.classList.add('bg-blue-600', 'text-white');
+            } else {
+                 activeBtn.classList.add('bg-slate-700', 'text-white');
+            }
+            
+            // Re-apply correct toggle styles on tab switch
+            if (tabName === 'analyzer') {
+                updateTradeToggleStyle();
+            }
+        }
+        
+        // Function to update the visual style of the Buy/Sell toggle
+        function updateTradeToggleStyle() {
+            const buyLabel = document.querySelector('label[for="trade-buy"]');
+            const sellLabel = document.querySelector('label[for="trade-sell"]');
+            const isBuySelected = document.getElementById('trade-buy').checked;
+
+            if (isBuySelected) {
+                buyLabel.classList.add('bg-blue-600', 'text-white');
+                buyLabel.classList.remove('bg-slate-600', 'text-slate-300');
+                sellLabel.classList.remove('bg-blue-600', 'text-white');
+                sellLabel.classList.add('bg-slate-700', 'text-slate-300');
+            } else {
+                sellLabel.classList.add('bg-blue-600', 'text-white');
+                sellLabel.classList.remove('bg-slate-600', 'text-slate-300');
+                buyLabel.classList.remove('bg-blue-600', 'text-white');
+                buyLabel.classList.add('bg-slate-700', 'text-slate-300');
+            }
+        }
+
+
+        // Initialize the first tab as active
+        window.onload = () => {
+             lucide.createIcons();
+             showTab('analyzer');
+             // Initial run of the analyzer on load (to clear defaults)
+             calcTradeAnalyzer();
+        }
+
+        // Helper for formatting currency (Indian Rupees)
+        function formatCurrency(amount) {
+            // Handle negative zero issue and use Indian locale for formatting
+            if (amount === 0) return '₹0.00';
+            const sign = amount < 0 ? '-' : '';
+            const absAmount = Math.abs(amount);
+            return sign + '₹' + absAmount.toLocaleString('en-IN', {maximumFractionDigits: 2, minimumFractionDigits: 2});
+        }
+        
+        // Helper for formatting percentage
+        function formatPercent(amount) {
+            return amount.toFixed(2) + '%';
+        }
+
+
+        // 1. COMBINED TRADE ANALYZER (Position Size + R:R + P&L + Leverage)
+        // This function runs automatically on every input change (oninput)
+        function calcTradeAnalyzer() {
+            // Update toggle style immediately on input change (required for radio button group)
+            updateTradeToggleStyle();
+
+            const capital = parseFloat(document.getElementById('pos-capital').value) || 0;
+            const riskPercent = parseFloat(document.getElementById('pos-risk-percent').value) || 0;
+            const entry = parseFloat(document.getElementById('pos-entry').value) || 0;
+            const sl = parseFloat(document.getElementById('pos-sl').value) || 0;
+            const target = parseFloat(document.getElementById('pos-target').value) || 0;
+            const leverage = parseFloat(document.getElementById('intraday-leverage').value) || 1;
+            const tradeType = document.querySelector('input[name="trade-type"]:checked').value;
+
+
+            // --- Reset Results if inputs are incomplete/invalid for the core calculation ---
+            if (capital <= 0 || riskPercent <= 0 || entry <= 0 || sl <= 0 || target <= 0 || entry === sl || leverage < 1) {
+                 // Reset P&L Results (All three)
+                document.getElementById('res-target-profit-amt').innerText = formatCurrency(0);
+                document.getElementById('res-target-profit-pct-required').innerText = formatPercent(0);
+                document.getElementById('res-target-profit-pct-total').innerText = formatPercent(0);
+                
+                 // Reset Position Sizing results
+                document.getElementById('res-qty').innerText = 0;
+                document.getElementById('res-capital-req').innerText = formatCurrency(0);
+                document.getElementById('res-risk-percent-out').innerText = `0%`;
+                document.getElementById('res-risk-amt').innerText = formatCurrency(0);
+                
+
+                // Reset R:R results
+                document.getElementById('rr-risk-val').innerText = '0.00';
+                document.getElementById('rr-reward-val').innerText = '0.00';
+                document.getElementById('rr-ratio-val').innerText = '1 : 0';
+                document.getElementById('risk-bar').style.width = '50%';
+                document.getElementById('reward-bar').style.width = '50%';
+                
+                const verdictEl = document.getElementById('rr-verdict');
+                verdictEl.innerText = `Enter all trade values to see analysis`;
+                verdictEl.className = "mt-4 text-center py-2 rounded bg-slate-800 text-sm font-medium text-slate-300";
+
+                // Reset dynamic colors to neutral
+                const PnL_elements = ['res-target-profit-amt', 'res-target-profit-pct-required', 'res-target-profit-pct-total'];
+                PnL_elements.forEach(id => {
+                    const el = document.getElementById(id);
+                    el.classList.remove('text-green-400', 'text-red-400');
+                    el.classList.add('text-white');
+                });
+
+
+                return;
+            }
+            
+            // --- POSITION SIZE & LEVERAGE LOGIC ---
+
+            // Max Loss Amount = (Total Capital * Risk %) / 100
+            const maxLossAmount = (capital * riskPercent) / 100;
+            // Risk Per Share = |Entry - SL|
+            const riskPerShare = Math.abs(entry - sl);
+            
+            // Quantity based on Risk Management
+            let quantity = Math.floor(maxLossAmount / riskPerShare);
+
+            // Calculate the total value of the position
+            const totalPositionValue = quantity * entry;
+            
+            // Calculate Margin Required using Leverage
+            // Margin Required = Total Position Value / Leverage
+            let requiredMargin = totalPositionValue / leverage;
+            
+            // Safety Check: If calculated margin exceeds total capital, the quantity must be reduced.
+            if (requiredMargin > capital) {
+                // If margin exceeds capital, recalculate max allowed quantity based on max margin (which is total capital)
+                // Max Position Value = Capital * Leverage
+                const maxPositionValue = capital * leverage;
+                // New Quantity = Floor(Max Position Value / Entry Price)
+                quantity = Math.floor(maxPositionValue / entry);
+                requiredMargin = quantity * entry / leverage; // Recalculate margin based on the new, smaller quantity
+            }
+            
+            // Final Metrics
+            const finalCapitalRequired = requiredMargin; // This is the final margin used
+            const actualMaxLoss = quantity * riskPerShare;
+            const riskPctOfCapital = (actualMaxLoss / capital) * 100;
+
+            // --- P&L LOGIC (Buy/Sell Adjusted) ---
+            
+            let profitPerShare = 0;
+            if (tradeType === 'buy') {
+                // Long: Profit = Target - Entry
+                profitPerShare = target - entry; 
+            } else {
+                // Short: Profit = Entry - Target
+                profitPerShare = entry - target; 
+            }
+
+            const targetProfitAmount = quantity * profitPerShare; // Total Profit/Loss Amount
+            
+            // 1. Profit/Loss % on Margin Used (Capital Required)
+            const targetProfitPercentRequired = (finalCapitalRequired > 0) ? (targetProfitAmount / finalCapitalRequired) * 100 : 0;
+            
+            // 2. Profit/Loss % on Total Account Capital (Portfolio impact)
+            const targetProfitPercentTotal = (capital > 0) ? (targetProfitAmount / capital) * 100 : 0;
+
+
+            // Update Position Sizing UI
+            document.getElementById('res-qty').innerText = quantity.toLocaleString('en-IN');
+            document.getElementById('res-capital-req').innerText = formatCurrency(finalCapitalRequired);
+            document.getElementById('res-risk-percent-out').innerText = `${riskPctOfCapital.toFixed(2)}%`;
+            document.getElementById('res-risk-amt').innerText = formatCurrency(actualMaxLoss);
+            
+            // Update P&L UI 
+            document.getElementById('res-target-profit-amt').innerText = formatCurrency(targetProfitAmount);
+            document.getElementById('res-target-profit-pct-required').innerText = formatPercent(targetProfitPercentRequired);
+            document.getElementById('res-target-profit-pct-total').innerText = formatPercent(targetProfitPercentTotal);
+            
+            // Function to set color classes (re-defined locally for clarity)
+            function setPnlColor(element, amount) {
+                element.classList.remove('text-green-400', 'text-red-400', 'text-white');
+                if (amount > 0) {
+                    element.classList.add('text-green-400');
+                } else if (amount < 0) {
+                    element.classList.add('text-red-400');
+                } else {
+                    element.classList.add('text-white');
+                }
+            }
+
+            setPnlColor(document.getElementById('res-target-profit-amt'), targetProfitAmount);
+            setPnlColor(document.getElementById('res-target-profit-pct-required'), targetProfitAmount); // Use P&L amount for Required % color
+            setPnlColor(document.getElementById('res-target-profit-pct-total'), targetProfitAmount); // Use P&L amount for Total % color
+
+
+            // --- RISK : REWARD LOGIC ---
+            
+            const risk = riskPerShare; // |Entry - SL|
+            const reward = Math.abs(targetProfitAmount / quantity); // |Target - Entry| or |Entry - Target|
+            const ratio = (reward / risk);
+
+            // Update R:R Numbers
+            document.getElementById('rr-risk-val').innerText = risk.toFixed(2);
+            document.getElementById('rr-reward-val').innerText = reward.toFixed(2);
+            
+            const ratioDisplay = isFinite(ratio) ? `1 : ${ratio.toFixed(2)}` : "1 : 0";
+            document.getElementById('rr-ratio-val').innerText = ratioDisplay;
+
+            // Visual Bar Logic
+            const total = risk + reward;
+            const riskPct = (risk / total) * 100;
+            const rewardPct = (reward / total) * 100;
+
+            document.getElementById('risk-bar').style.width = `${riskPct}%`;
+            document.getElementById('reward-bar').style.width = `${rewardPct}%`;
+
+            // Verdict
+            const verdictEl = document.getElementById('rr-verdict');
+            if (ratio >= 2) {
+                verdictEl.innerText = `Excellent Setup (R:R: 1:${ratio.toFixed(2)}). Exceeds 2:1.`;
+                verdictEl.className = "mt-4 text-center py-2 rounded bg-green-900/30 text-green-400 border border-green-900 text-sm font-medium";
+            } else if (ratio >= 1.5) {
+                verdictEl.innerText = `Good Setup (R:R: 1:${ratio.toFixed(2)}). Above 1.5:1.`;
+                verdictEl.className = "mt-4 text-center py-2 rounded bg-yellow-900/30 text-yellow-400 border border-yellow-900 text-sm font-medium";
+            } else if (ratio >= 1) {
+                verdictEl.innerText = `Minimum Acceptable (R:R: 1:${ratio.toFixed(2)}). At least 1:1.`;
+                verdictEl.className = "mt-4 text-center py-2 rounded bg-slate-700 text-slate-300 border border-slate-600 text-sm font-medium";
+            } else {
+                verdictEl.innerText = `Poor Setup (R:R: 1:${ratio.toFixed(2)}). Risk is higher than reward.`;
+                verdictEl.className = "mt-4 text-center py-2 rounded bg-red-900/30 text-red-400 border border-red-900 text-sm font-medium";
+            }
+        }
+
+        // 2. Average Price Calculator (Unchanged Logic)
+        function calcAverage() {
+            const p1 = parseFloat(document.getElementById('avg-p1').value) || 0;
+            const q1 = parseFloat(document.getElementById('avg-q1').value) || 0;
+            const p2 = parseFloat(document.getElementById('avg-p2').value) || 0;
+            const q2 = parseFloat(document.getElementById('avg-q2').value) || 0;
+
+            if (p1 <= 0 || q1 <= 0) {
+                return showModal("Please enter valid Price and Quantity for the first entry.");
+            }
+
+            const totalQty = q1 + q2;
+            const totalInvested = (p1 * q1) + (p2 * q2);
+            
+            let avgPrice = 0;
+            if (totalQty > 0) {
+                avgPrice = totalInvested / totalQty;
+            }
+
+            document.getElementById('avg-result-price').innerText = avgPrice.toFixed(2);
+            document.getElementById('avg-result-qty').innerText = totalQty.toLocaleString('en-IN');
+            document.getElementById('avg-result-invested').innerText = formatCurrency(totalInvested);
+
+            const breakevenEl = document.getElementById('avg-breakeven');
+            
+            if (p2 === 0 || q2 === 0) {
+                breakevenEl.innerHTML = `<p class="text-slate-500">Add a second entry to calculate the new average.</p>`;
+            } else {
+                const priceDifference = avgPrice - p1;
+                const percentChangeRequired = (priceDifference / p1) * 100;
+                
+                if (avgPrice < p1) {
+                    breakevenEl.innerHTML = `<p class="text-sm font-semibold mt-4 text-green-400">
+                        Averaging Down Success: Your break-even price is now <span class="font-bold">₹${avgPrice.toFixed(2)}</span>.
+                        The stock needs to move only <span class="font-bold">${Math.abs(percentChangeRequired).toFixed(2)}% up</span> to reach the original entry price (₹${p1.toFixed(2)}).
+                    </p>`;
+                } else if (avgPrice > p1) {
+                    breakevenEl.innerHTML = `<p class="text-sm font-semibold mt-4 text-red-400">
+                        Averaging Up: Your break-even price is now <span class="font-bold">₹${avgPrice.toFixed(2)}</span>.
+                        The price is now <span class="font-bold">${Math.abs(percentChangeRequired).toFixed(2)}% higher</span> than your first entry (₹${p1.toFixed(2)}).
+                    </p>`;
+                } else {
+                     breakevenEl.innerHTML = `<p class="text-slate-500">The average price remains ₹${avgPrice.toFixed(2)}. The second entry price was identical.</p>`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
