@@ -75,8 +75,8 @@ range_labels = ["Manual", "1W", "1M", "6M", "1Y"]
 date_range_option = st.sidebar.select_slider("Select Day Range", options=range_labels, value="Manual")
 
 # Manual date pickers
-from_date = st.sidebar.date_input("From Date", pd.to_datetime("2025-11-01"))
-to_date = st.sidebar.date_input("To Date", pd.to_datetime("2025-11-30"))
+from_date = st.sidebar.date_input("From Date", pd.to_datetime("2025-01-01"))
+to_date = st.sidebar.date_input("To Date", pd.to_datetime("2025-12-06"))
 
 # Apply quick ranges
 today = pd.to_datetime("today").normalize()

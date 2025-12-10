@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "kite": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.kite.trade/mcp"
+      ]
+    },
+    "NseKit-MCP": {
+      "command": "uvx",
+      "args": ["nsekit-mcp@latest"]
+    }
+  }
+}

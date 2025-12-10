@@ -3,9 +3,11 @@
 #=====================================================================#
 
 import NseKit
+import Moneycontrol
 from rich.console import Console
 
 # Create NSE instance
+mc = Moneycontrol.MC()
 get = NseKit.Nse()
 rich = Console()
 
@@ -196,8 +198,14 @@ rich = Console()
 # print(get.cm_live_hist_corporate_announcement("RELIANCE", "01-01-2025", "15-10-2025"))  # Symbol + date range
 
 # # 🔹 Corporate Actions
-# print(get.cm_live_hist_corporate_action())               # Corporate actions (default: next 90 days)
+# print(get.cm_live_hist_corporate_action())                   # Corporate actions (default: next 90 days)  
+# print(get.cm_live_hist_corporate_action("1M"))               # period             "1D", "1W", "1M", "3M", "6M", "1Y"
+# print(get.cm_live_hist_corporate_action("01-01-2025", "15-10-2025"))  # Date range
+# print(get.cm_live_hist_corporate_action("LAURUSLABS"))         # Symbol Corporate actions
+# print(get.cm_live_hist_corporate_action("LAURUSLABS", "1Y"))   # Symbol with period             "1D", "1W", "1M", "3M", "6M", "1Y"
+# print(get.cm_live_hist_corporate_action("RELIANCE", "01-01-2025", "15-10-2025"))  # Symbol + date range
 # print(get.cm_live_hist_corporate_action("01-01-2025", "15-03-2025", "Dividend"))  # Filter by date and purpose
+
 
 # # 🔹 Today's Event Calendar
 # print(get.cm_live_today_event_calendar())                # Today's corporate events
@@ -268,12 +276,23 @@ rich = Console()
 # print(get.cm_live_hist_annual_reports("RELIANCE", "01-01-2025", "15-10-2025"))  # Symbol + date range
 
 
+# #---------------------------------------------------------- Live Chart Data ----------------------------------------------------------
+
+# print(get.nifty_chart("1D"))
+# print(get.stock_chart("RELIANCE", "1D"))
+# print(get.fno_chart("TCS", "FUTSTK","30-12-2025"))
+# print(get.fno_chart("NIFTY", "OPTIDX","09-12-2025","CE25900"))
+
 # #---------------------------------------------------------- FnO Live Data ----------------------------------------------------------
 
-# # 🔹 Futures Data
-# print(get.fno_live_futures_data("RELIANCE"))                # Stock futures data for a symbol
-# print(get.fno_live_futures_data("NIFTY"))                   # Index futures data for a symbol
+# # 🔹 All Futures & Options contracts Data
+# print(get.symbol_full_fno_live_data("TCS"))                         # json format
+# print(get.symbol_specific_most_active_Calls_or_Puts_or_Contracts_by_OI("TCS","C"))        Most Active Calls "C"/ Puts "P"/ Contracts by Open Interest (OI) "O" # json format
+# print(get.identifier_based_fno_contracts_live_chart_data("OPTSTKTCS30-12-2025CE3300.00"))                         # json format
 
+# # 🔹 Futures Data
+# print(get.fno_live_futures_data("RELIANCE"))             # Stock futures data for a symbol
+# print(get.fno_live_futures_data("NIFTY"))              # Index futures data for a symbol
 
 # # 🔹 Most Active Futures Contracts by Volume
 # print(get.fno_live_most_active_futures_contracts("Volume")) # Most active futures by volume
@@ -331,25 +350,17 @@ rich = Console()
 
 
 # # 🔹 Option Chain
-# print(get.fno_live_option_chain_raw("RELIANCE"))             # Option chain for a stock symbol
-# print(get.fno_live_option_chain_raw("NIFTY 50", indices=True))  # Option chain for an index
-# print(get.fno_live_option_chain_raw("RELIANCE", expiry_date="28-10-2025"))  # Option chain with specific expiry
-
-
-# # 🔹 Option Chain
 # print(get.fno_live_option_chain("RELIANCE"))             # Option chain for a stock symbol
-# print(get.fno_live_option_chain("NIFTY 50", indices=True))  # Option chain for an index
-# print(get.fno_live_option_chain("RELIANCE", expiry_date="28-10-2025"))  # Option chain with specific expiry
+# print(get.fno_live_option_chain("NIFTY"))  # Option chain for an index
+# print(get.fno_live_option_chain("RELIANCE", expiry_date="27-Jan-2026"))  # Option chain with specific expiry
 # print(get.fno_live_option_chain("RELIANCE", oi_mode="compact"))  # Compact option chain data
 
-# # 🔹 Nifty Active Contracts
-# print(get.fno_live_nifty_active_contracts("NIFTY 50"))   # Active index option contracts
-# print(get.fno_live_nifty_active_contracts("NIFTY 50", expiry_date="30-10-2025"))  # Active index contracts with expiry
+# # 🔹 Active Contracts
+# print(get.fno_live_active_contracts("NIFTY"))   # Active index option contracts
+# print(get.fno_live_active_contracts("NIFTY", expiry_date="09-12-2025"))  # Active index contracts with expiry
 
-# # 🔹 Stock Active Contracts
-# print(get.fno_live_stock_active_contracts("RELIANCE"))   # Active stock option contracts
-# print(get.fno_live_stock_active_contracts("RELIANCE", expiry_date="30-10-2025"))  # Active stock contracts with expiry
-
+# print(get.fno_live_active_contracts("RELIANCE"))   # Active stock option contracts
+# print(get.fno_live_active_contracts("RELIANCE", expiry_date="30-10-2025"))  # Active stock contracts with expiry
 
 
 # #---------------------------------------------------------- CM EOD Data ----------------------------------------------------------
@@ -541,3 +552,18 @@ rich = Console()
 
 # # 🔹 SEBI Data (Paged Circulars)
 # print(get.sebi_data())                                  # Fetch latest SEBI circulars (default: 1 page)
+
+
+
+
+
+
+
+
+
+
+# #---------------------------------------------------------- Money control ----------------------------------------------------------
+
+# # 🔹 Advances/Declines data
+# print(mc.fetch_adv_dec("NIFTY 50"))                                  # Advances/Declines data
+# print(mc.fetch_adv_dec("NIFTY 500"))                                  # Advances/Declines data
