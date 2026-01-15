@@ -1,0 +1,5 @@
+Stock,Current Price,Date,Gap Type,Gap Size,Gap Range,Near Price,Gap Size %,Gap Dist Start %,Gap Dist End %
+AMBER,6140.00,12-05-25,Bullish Gap,64.50,"(5970.00, 6034.50)",TRUE,1.11,1.72,2.77
+HDFCBANK,925.00,15-04-25,Bullish Gap,10.50,"(909.70, 920.20)",TRUE,1.16,0.52,1.65
+LICI,825.00,12-05-25,Bullish Gap,11.75,"(789.40, 801.15)",TRUE,1.49,2.89,4.32
+UNOMINDA,1192.40,18-08-25,Bullish Gap,17.20,"(1154.00, 1171.20)",TRUE,1.50,1.78,3.22

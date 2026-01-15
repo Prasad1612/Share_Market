@@ -1,0 +1,2 @@
+Stock,Current Price,Date,Gap Type,Gap Size,Gap Range,Near Price,Gap Size %,Gap Dist Start %,Gap Dist End %
+HDFCBANK,925.00,15-04-25,Bullish Gap,10.50,"(909.70, 920.20)",TRUE,1.16,0.52,1.65
