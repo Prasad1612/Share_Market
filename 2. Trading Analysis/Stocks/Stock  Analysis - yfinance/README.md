@@ -141,16 +141,6 @@ This makes the system:
 
 ---
 
-## 📌 Future‑Ready
-
-This architecture easily supports:
-- ML prediction layers
-- Accuracy tracking
-- Backtesting engines
-- Auto‑alerts & dashboards
-
----
-
 ### ⚡ Built for speed. Designed for scale. Safe for APIs.
 
 Happy Trading 📈
