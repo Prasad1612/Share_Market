@@ -1,0 +1,85 @@
+import importlib.util
+import os
+import sys
+import stock_data_manager
+import pandas as pd
+from tqdm import tqdm
+
+def load_module_from_path(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+def main():
+    print("🚀 Starting Combined Analysis...")
+    
+    # 1. Fetch Data (Checks cache first)
+    print("\n1️⃣  Fetching Stock Data (Local Cache or Fresh Download)...")
+    tickers = stock_data_manager.get_combined_ticker_list()
+    # For testing, you can limit tickers here. Comment out for production.
+    # tickers = tickers[:5] 
+    
+    # get_data handles cache checking automatically
+    data_map = stock_data_manager.get_data(tickers, period="1y", interval="1d")
+    
+    if not data_map:
+        print("❌ No data fetched. Exiting.")
+        return
+
+    # 2. Run LTP Near Gaps
+    print("\n2️⃣  Running LTP Near Gaps Analysis...")
+    try:
+        ltp_module = load_module_from_path("ltp_gaps", "LTP Near Gaps.py")
+        
+        # Run for each group defined in the module
+        groups = ltp_module.groups
+        for group_name, group_tickers in groups.items():
+            print(f"   > Processing Group: {group_name}...")
+            # Filter tickers that are in data_map
+            valid_tickers = [t for t in group_tickers if t in data_map]
+            
+            if valid_tickers:
+                gaps = ltp_module.detect_gaps(data_map, valid_tickers)
+                ltp_module.save_to_csv(gaps, filename=f"gaps_{group_name}.csv")
+            else:
+                print(f"     No valid data for group {group_name}")
+                
+    except Exception as e:
+        print(f"❌ Error running LTP Near Gaps: {e}")
+
+    # 3. Run Support and Resistance
+    print("\n3️⃣  Running Support & Resistance Analysis...")
+    try:
+        sr_module = load_module_from_path("support_resistance", "Support and Resistance.py")
+        
+        # Pass all tickers or a specific list. Passing all unique available tickers.
+        all_available_tickers = list(data_map.keys())
+        
+        sr_module.run_fractal_sr(
+            all_available_tickers, 
+            period="1y", 
+            interval="1d", 
+            data_dict=data_map,
+            save_charts=True,
+            plot=False,
+            out_dir='outputs/support_resistance/' # separate folder to distinguish
+        )
+        
+    except Exception as e:
+        print(f"❌ Error running Support and Resistance: {e}")
+
+    # 4. Candle & Gap Analysis
+    print("\n4️⃣  Running Candle & Gap Analysis...")
+    try:
+        candle_module = load_module_from_path("candle_analysis", "candle & gap analysis.py")
+        candle_module.run(data_dict=data_map)
+        
+    except Exception as e:
+        print(f"❌ Error running Candle & Gap Analysis: {e}")
+
+    print("\n✅ All Analyses Completed Successfully!")
+
+if __name__ == "__main__":
+    main()
