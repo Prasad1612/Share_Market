@@ -66,54 +66,75 @@ def detect_gaps(data_dict, ticker_list=None):
                 
             df = data_dict[ticker].copy()
             
+            # Handle yfinance MultiIndex or Date-as-index
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+            
+            if 'Date' not in df.columns:
+                df.reset_index(inplace=True)
+            
+            # Ensure Date column name is standardized
+            if 'Date' not in df.columns:
+                # If index was named something else or unnamed
+                df.rename(columns={df.columns[0]: 'Date'}, inplace=True)
+
             if df.empty:
                 tqdm.write(f"⚠️ No data for {ticker}")
                 continue
 
-            # Ensure date index is reset or handled if it came from yfinance direct download
-            # stock_data_manager returns df with Date as column or index depending on how it was processed.
-            # Assuming stock_data_manager returns standardized DF or we handle it here.
-            # yfinance download(period=...) usually returns Date as index.
-            if 'Date' not in df.columns and isinstance(df.index, pd.DatetimeIndex):
-                df.reset_index(inplace=True)
-                
             gaps = []
             current_price = df['Close'].iloc[-1]
+            last_valid_idx = 0 # Track last candle with Volume > 0
 
             for i in range(1, len(df)):
-                prev_low = df['Low'].iloc[i-1]
-                prev_high = df['High'].iloc[i-1]
-                prev_close = df['Close'].iloc[i-1]
+                # If current candle has 0 volume, it can't form a gap boundary correctly
+                # But we ONLY care about the PREVIOUS candle having volume.
+                # If the previous candle had 0 volume, we walk back to find the real edge.
+                
+                # Check if current candle has volume (though gap logic usually focuses on previous)
+                curr_vol = df['Volume'].iloc[i] if 'Volume' in df.columns else 1
+                
+                # Find the previous boundary
+                # We want the last bar that actually TRADED.
+                p_idx = i - 1
+                while p_idx > 0 and 'Volume' in df.columns and df['Volume'].iloc[p_idx] == 0:
+                    p_idx -= 1
+                
+                prev_low = df['Low'].iloc[p_idx]
+                prev_high = df['High'].iloc[p_idx]
+                prev_close = df['Close'].iloc[p_idx]
+                
                 curr_high = df['High'].iloc[i]
                 curr_low = df['Low'].iloc[i]
 
+                # Skip if current candle has 0 volume (rarely forms a valid gap we want to trade)
+                if 'Volume' in df.columns and curr_vol == 0:
+                    continue
+
                 # ---- Bearish Gap ----
                 if curr_high < prev_low:
-                    raw_gap_range = (prev_low, curr_high) # (Top, Bottom)
-                    
-                    # Check for fills
+                    # Check for fills relative to INITIAL gap
                     post_data = df.iloc[i+1:]
                     
                     # Check if FULLY filled (High goes above the gap top)
-                    filled = any(post_data['High'] >= prev_low)
+                    filled = any(post_data['High'] >= prev_low) if not post_data.empty else False
                     if filled:
                         continue
                         
                     # Calculate Invading High (highest price reached inside the gap after formation)
-                    if not post_data.empty:
-                        invading_high = post_data['High'].max()
-                    else:
-                        invading_high = curr_high # No post data, so effective bottom is just the gap bottom
-
+                    invading_high = post_data['High'].max() if not post_data.empty else curr_high
+                    
                     # Effective Bottom moves UP if price invaded the gap
                     effective_bottom = max(curr_high, invading_high)
+                    status = "Touched" if invading_high > curr_high else "Fresh"
                     
                     # Recalculate Gap Size based on remaining unfilled portion
                     gap_size = prev_low - effective_bottom
                     gap_range = (prev_low, effective_bottom)
                     
                     # Re-check min gap percent on the remaining gap
-                    gap_size_percent = (gap_size / prev_close) * 100
+                    # Corrected calculation: relative to gap top
+                    gap_size_percent = (gap_size / prev_low) * 100
                     if gap_size_percent < min_gap_percent:
                         continue
 
@@ -125,48 +146,46 @@ def detect_gaps(data_dict, ticker_list=None):
                         continue
                     
                     # SWAP for Bearish Gap
-                    gap_distance_start_percent = ((current_price - gap_range[1]) / current_price) * 100  # upper -> start
-                    gap_distance_end_percent   = ((current_price - gap_range[0]) / current_price) * 100  # lower -> end
+                    gap_distance_start_percent = ((current_price - gap_range[1]) / current_price) * 100
+                    gap_distance_end_percent   = ((current_price - gap_range[0]) / current_price) * 100
 
                     gaps.append({
-                        "date": df['Date'].iloc[i].date(),
+                        "date": df['Date'].iloc[i].date() if hasattr(df['Date'].iloc[i], 'date') else df['Date'].iloc[i],
                         "gap_type": "Bearish Gap",
                         "gap_size": gap_size,
                         "gap_range": gap_range,
                         "near_price": near_price,
                         "gap_size_percent": gap_size_percent,
                         "gap_distance_start_percent": gap_distance_start_percent,
-                        "gap_distance_end_percent": gap_distance_end_percent
+                        "gap_distance_end_percent": gap_distance_end_percent,
+                        "status": status
                     })
 
 
                 # ---- Bullish Gap ----
                 if curr_low > prev_high:
-                    raw_gap_range = (prev_high, curr_low) # (Bottom, Top)
-                    
-                    # Check for fills
+                    # Check for fills relative to INITIAL gap
                     post_data = df.iloc[i+1:]
                     
                     # Check if FULLY filled (Low goes below the gap bottom)
-                    filled = any(post_data['Low'] <= prev_high)
+                    filled = any(post_data['Low'] <= prev_high) if not post_data.empty else False
                     if filled:
                         continue
 
                     # Calculate Invading Low (lowest price reached inside the gap after formation)
-                    if not post_data.empty:
-                        invading_low = post_data['Low'].min()
-                    else:
-                        invading_low = curr_low
+                    invading_low = post_data['Low'].min() if not post_data.empty else curr_low
                         
                     # Effective Top moves DOWN if price invaded the gap
                     effective_top = min(curr_low, invading_low)
+                    status = "Touched" if invading_low < curr_low else "Fresh"
                     
                     # Recalculate Gap Size based on remaining unfilled portion
                     gap_size = effective_top - prev_high
                     gap_range = (prev_high, effective_top)
 
                     # Re-check min gap percent on the remaining gap
-                    gap_size_percent = (gap_size / prev_close) * 100
+                    # Corrected calculation: relative to gap bottom
+                    gap_size_percent = (gap_size / prev_high) * 100
                     if gap_size_percent < min_gap_percent:
                         continue
 
@@ -176,17 +195,19 @@ def detect_gaps(data_dict, ticker_list=None):
                     )
                     if only_near and not near_price:
                         continue
+                        
                     gap_distance_start_percent = ((current_price - gap_range[1]) / current_price) * 100
                     gap_distance_end_percent = ((current_price - gap_range[0]) / current_price) * 100
                     gaps.append({
-                        "date": df['Date'].iloc[i].date(),
+                        "date": df['Date'].iloc[i].date() if hasattr(df['Date'].iloc[i], 'date') else df['Date'].iloc[i],
                         "gap_type": "Bullish Gap",
                         "gap_size": gap_size,
                         "gap_range": gap_range,
                         "near_price": near_price,
                         "gap_size_percent": gap_size_percent,
                         "gap_distance_start_percent": gap_distance_start_percent,
-                        "gap_distance_end_percent": gap_distance_end_percent
+                        "gap_distance_end_percent": gap_distance_end_percent,
+                        "status": status
                     })
 
             if gaps:
@@ -224,12 +245,13 @@ def save_to_csv(results, filename="gaps_results.csv"):
                 "Near Price": str(gap['near_price']).upper(),
                 "Gap Size %": f"{gap['gap_size_percent']:.2f}",
                 "Gap Dist Start %": f"{gap['gap_distance_start_percent']:.2f}",
-                "Gap Dist End %": f"{gap['gap_distance_end_percent']:.2f}"
+                "Gap Dist End %": f"{gap['gap_distance_end_percent']:.2f}",
+                "Status": gap['status']
             })
 
     df = pd.DataFrame(rows, columns=[
         "Stock", "Current Price", "Date", "Gap Type", "Gap Size", "Gap Range",
-        "Near Price", "Gap Size %", "Gap Dist Start %", "Gap Dist End %"
+        "Near Price", "Gap Size %", "Gap Dist Start %", "Gap Dist End %", "Status"
     ])
 
     # Save inside folder
@@ -245,7 +267,7 @@ def print_pretty_results(results):
         table = PrettyTable()
         table.field_names = [
             "Date", "Gap Type", "Gap Size", "Gap Range", "Near Price",
-            "Gap Size %", "Gap Dist Start %", "Gap Dist End %"
+            "Gap Size %", "Gap Dist Start %", "Gap Dist End %", "Status"
         ]
         for gap in data['gaps']:
             table.add_row([
@@ -254,7 +276,8 @@ def print_pretty_results(results):
                 gap['near_price'],
                 f"{gap['gap_size_percent']:.2f}",
                 f"{gap['gap_distance_start_percent']:.2f}",
-                f"{gap['gap_distance_end_percent']:.2f}"
+                f"{gap['gap_distance_end_percent']:.2f}",
+                gap['status']
             ])
         print(table)
 

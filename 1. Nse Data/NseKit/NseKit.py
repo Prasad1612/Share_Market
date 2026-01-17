@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import re
 import random
-import feedparser
 import warnings
 import csv
 import json
@@ -689,6 +688,33 @@ class Nse:
             return data_df
         except (requests.RequestException, ValueError):
             return None
+        
+
+    def state_wise_registered_investors(self):
+        self.rotate_user_agent()  # Rotating User-Agent
+
+        ref_url = 'https://www.nseindia.com/registered-investors/'
+        api_url = "https://www.nseindia.com/api/registered-investors"
+
+        # --- Fetch & process ---
+
+        try:
+            # Get reference cookies from the main page
+            ref_response = self.session.get(ref_url, headers=self.headers, timeout=10)
+            ref_response.raise_for_status()  # Ensure request was successful
+
+            # Make API call using cookies from the previous request
+            response = self.session.get(api_url, headers=self.headers, cookies=ref_response.cookies.get_dict(), timeout=10)
+            response.raise_for_status()  # Ensure request was successful
+
+            # Convert response to JSON
+            data = response.json()
+
+            return data
+
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print(f"Error fetching data: {e}")
+            return None  
 
     #---------------------------------------------------------- IPO ----------------------------------------------------------------
 
@@ -928,6 +954,40 @@ class Nse:
         except (requests.RequestException, ValueError, KeyError) as e:
             print(f"Error fetching Nifty Advance-Decline data: {e}")
             return None
+        
+    def pre_market_all_nse_adv_dec_info(self, category='All'):
+        pre_market_xref = {"NIFTY 50": "NIFTY", "Nifty Bank": "BANKNIFTY", "Emerge": "SME", "Securities in F&O": "FO", "Others": "OTHERS", "All": "ALL"}
+        
+        self.rotate_user_agent()
+        ref_url = 'https://www.nseindia.com/market-data/pre-open-market-cm-and-emerge-market'
+        
+        try:
+            ref = self.session.get(ref_url, headers=self.headers, timeout=10)
+            ref.raise_for_status()
+            
+            url = f"https://www.nseindia.com/api/market-data-pre-open?key={pre_market_xref.get(category, 'ALL')}"
+            response = self.session.get(url, headers=self.headers, cookies=ref.cookies.get_dict(), timeout=10)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            # Extract Advances, Declines, Unchanged & Timestamp
+            advances = data.get("advances", 0)
+            declines = data.get("declines", 0)
+            unchanged = data.get("unchanged", 0)
+            timestamp = data.get("timestamp", "Unknown")
+
+            # Create a single-row DataFrame
+            df = pd.DataFrame([{
+                "advances": advances,
+                "declines": declines,
+                "unchanged": unchanged,
+                "timestamp": timestamp
+            }])
+            return df
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print(f"Error fetching All NSE Advance-Decline data: {e}")
+            return None
 
     def pre_market_info(self, category='All'):
         pre_market_xref = {"NIFTY 50": "NIFTY", "Nifty Bank": "BANKNIFTY", "Emerge": "SME", "Securities in F&O": "FO", "Others": "OTHERS", "All": "ALL"}
@@ -963,40 +1023,40 @@ class Nse:
             return df
         except (requests.RequestException, ValueError):
             return None
+        
+    def pre_market_derivatives_info(self, category='Index Futures'):
+        pre_market_xref = {"Index Futures": "FUTIDX", "Stock Futures": "FUTSTK"} 
 
-    def pre_market_all_nse_adv_dec_info(self, category='All'):
-        pre_market_xref = {"NIFTY 50": "NIFTY", "Nifty Bank": "BANKNIFTY", "Emerge": "SME", "Securities in F&O": "FO", "Others": "OTHERS", "All": "ALL"}
-        
         self.rotate_user_agent()
-        ref_url = 'https://www.nseindia.com/market-data/pre-open-market-cm-and-emerge-market'
-        
+        ref_url = 'https://www.nseindia.com/market-data/pre-open-market-fno'
+        ref = requests.get(ref_url, headers=self.headers)
+        url = f"https://www.nseindia.com/api/market-data-pre-open-fno?key={pre_market_xref[category]}"
         try:
-            ref = self.session.get(ref_url, headers=self.headers, timeout=10)
-            ref.raise_for_status()
-            
-            url = f"https://www.nseindia.com/api/market-data-pre-open?key={pre_market_xref.get(category, 'ALL')}"
             response = self.session.get(url, headers=self.headers, cookies=ref.cookies.get_dict(), timeout=10)
             response.raise_for_status()
-            
-            data = response.json()
-            
-            # Extract Advances, Declines, Unchanged & Timestamp
-            advances = data.get("advances", 0)
-            declines = data.get("declines", 0)
-            unchanged = data.get("unchanged", 0)
-            timestamp = data.get("timestamp", "Unknown")
-
-            # Create a single-row DataFrame
-            df = pd.DataFrame([{
-                "advances": advances,
-                "declines": declines,
-                "unchanged": unchanged,
-                "timestamp": timestamp
-            }])
+            data = response.json()["data"]
+            processed_data = [{
+                "symbol": i["metadata"]["symbol"],
+                "expiryDate": i["metadata"]["expiryDate"],
+                "previousClose": i["metadata"]["previousClose"],
+                "iep": i["metadata"]["iep"],
+                "change": i["metadata"]["change"],
+                "pChange": i["metadata"]["pChange"],
+                "lastPrice": i["metadata"]["lastPrice"],
+                "finalQuantity": i["metadata"]["finalQuantity"],
+                "totalTurnover": i["metadata"]["totalTurnover"],
+                "totalBuyQuantity": i["detail"]["preOpenMarket"]["totalBuyQuantity"],
+                "totalSellQuantity": i["detail"]["preOpenMarket"]["totalSellQuantity"],
+                "atoBuyQty": i["detail"]["preOpenMarket"]["atoBuyQty"],
+                "atoSellQty": i["detail"]["preOpenMarket"]["atoSellQty"],
+                "lastUpdateTime": i["detail"]["preOpenMarket"]["lastUpdateTime"]
+            } for i in data]
+            df = pd.DataFrame(processed_data)
+            df = df.set_index("symbol", drop=False)
             return df
-        except (requests.RequestException, ValueError, KeyError) as e:
-            print(f"Error fetching All NSE Advance-Decline data: {e}")
+        except (requests.RequestException, ValueError):
             return None
+
 
     #---------------------------------------------------------- Index_Live_Data ----------------------------------------------------------------
     
@@ -1056,9 +1116,11 @@ class Nse:
             df = df.set_index("symbol", drop=False)
 
             # If only the symbol list is required
+            # if list_only:
+            #     symbol_list = sorted(df.index.tolist())
+            #     return symbol_list
             if list_only:
-                symbol_list = sorted(df.index.tolist())
-                return symbol_list
+                return df["symbol"].tolist()            
 
             # Reorder columns as per your requirement
             column_order = [
@@ -1121,11 +1183,61 @@ class Nse:
             print(f"Error fetching all indices data: {e}")
             return None
 
-    def index_live_nifty_50_contribution(self):
-        self.rotate_user_agent()  # Rotating User-Agent
+    def index_live_contribution(self, *args, Index: str = "NIFTY 50", Mode: str = "First Five"):
+        """
+        Fetch index contribution data from NSE
 
-        ref_url = 'https://www.nseindia.com'
-        api_url = 'https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getContributionData&&index=NIFTY%2050'
+        Valid Calls:
+        -----------
+        index_live_contribution()
+        index_live_contribution("Full")
+        index_live_contribution("NIFTY BANK")
+        index_live_contribution("NIFTY BANK", "Full")
+        index_live_contribution(Index="NIFTY IT", Mode="Full")
+        """
+
+        # ----------------------------------
+        # Smart *args Resolver
+        # ----------------------------------
+        if len(args) == 1:
+            if args[0] in ("First Five", "Full"):
+                Mode = args[0]
+            else:
+                Index = args[0]
+
+        elif len(args) == 2:
+            Index, Mode = args
+
+        elif len(args) > 2:
+            raise ValueError("Max 2 positional arguments allowed")
+
+        # ----------------------------------
+        # Validation & Normalization
+        # ----------------------------------
+        Index = str(Index).upper()
+        Mode  = str(Mode)
+
+        if Mode not in ("First Five", "Full"):
+            raise ValueError("Mode must be 'First Five' or 'Full'")
+
+        index_encoded = Index.replace("&", "%26").replace(" ", "%20")
+
+        self.rotate_user_agent()
+        ref_url = "https://www.nseindia.com"
+
+        # ----------------------------------
+        # API URL Selection
+        # ----------------------------------
+        if Mode == "First Five":
+            api_url = (
+                "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi"
+                f"?functionName=getContributionData&index={index_encoded}&flag=0"
+            )
+        else:
+            api_url = (
+                "https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi"
+                f"?functionName=getContributionData&index={index_encoded}&noofrecords=0&flag=1"
+            )
 
         try:
             # Get reference cookies from the main page
@@ -1157,6 +1269,7 @@ class Nse:
         except (requests.RequestException, ValueError, KeyError) as e:
             print(f"Error fetching all indices data: {e}")
             return None
+
         
     #---------------------------------------------------------- Index_Eod_Data ----------------------------------------------------------------
 
@@ -1275,43 +1388,53 @@ class Nse:
         return nse_df
     
     # sub function of def index_historical_data()
-    def get_index_data(self, index: str, from_date: str, to_date: str): 
-        index_data_columns = ['Date', 'INDEX_NAME', 'Open', 'High', 'Close', 'Low', 'Shares Traded', 'Turnover (₹ Cr)']
+    def get_index_data(self, index: str, from_date: str, to_date: str):
+        index_data_columns = ['Date', 'INDEX_NAME', 'Open', 'High', 'Low', 'Close', 'Shares Traded', 'Turnover (₹ Cr)']
+
         index = index.replace(' ', '%20').upper()
         ref_url = 'https://www.nseindia.com/reports-indices-historical-index-data'
         ref = requests.get(ref_url, headers=self.headers)
-        url = f"https://www.nseindia.com/api/historical/indicesHistory?indexType={index}&from={from_date}&to={to_date}"
-        
+        url = f"https://www.nseindia.com/api/historicalOR/indicesHistory?indexType={index}&from={from_date}&to={to_date}"
+
         try:
-            data_json = self.session.get(url, headers=self.headers, cookies=ref.cookies.get_dict()).json()
-            data_close_df = pd.DataFrame(data_json['data']['indexCloseOnlineRecords']).drop(columns=['_id', 'EOD_TIMESTAMP'])
-            data_turnover_df = pd.DataFrame(data_json['data']['indexTurnoverRecords']).drop(columns=['_id', 'HIT_INDEX_NAME_UPPER'])
-            data_df = pd.merge(data_close_df, data_turnover_df, on='TIMESTAMP', how='inner')
+            data_json = self.session.get(
+                url,
+                headers=self.headers,
+                cookies=ref.cookies.get_dict()
+            ).json()
+
+            records = data_json.get("data", [])
+
+            if not isinstance(records, list) or len(records) == 0:
+                raise ValueError("Empty or invalid NSE index response")
+
+            df = pd.DataFrame(records)
+
         except Exception as e:
-            raise ValueError(f"Failed to fetch data from NSE API: {str(e)}")
-        
-        data_df.drop(columns='TIMESTAMP', inplace=True)
-        unwanted_str_list = ['FH_', 'EOD_', 'HIT_']
-        new_col = data_df.columns
-        for unwanted in unwanted_str_list:
-            new_col = [name.replace(unwanted, '') for name in new_col]
-        data_df.columns = new_col
-        
-        # Rename columns to match requested names
+            raise ValueError(f"Failed to fetch data from NSE API: {e}")
+
+        # Rename columns (new NSE format → standard format)
         column_mapping = {
-            'TIMESTAMP': 'Date',
-            'INDEX_NAME': 'INDEX_NAME',
-            'OPEN_INDEX_VAL': 'Open',
-            'HIGH_INDEX_VAL': 'High',
-            'LOW_INDEX_VAL': 'Low',
-            'CLOSE_INDEX_VAL': 'Close',
-            'TRADED_QTY': 'Shares Traded',
-            'TURN_OVER': 'Turnover (₹ Cr)'
+            'EOD_TIMESTAMP': 'Date',
+            'EOD_INDEX_NAME': 'INDEX_NAME',
+            'EOD_OPEN_INDEX_VAL': 'Open',
+            'EOD_HIGH_INDEX_VAL': 'High',
+            'EOD_LOW_INDEX_VAL': 'Low',
+            'EOD_CLOSE_INDEX_VAL': 'Close',
+            'HIT_TRADED_QTY': 'Shares Traded',
+            'HIT_TURN_OVER': 'Turnover (₹ Cr)'
         }
-        data_df = data_df.rename(columns=column_mapping)
-        # data_df['Date'] = pd.to_datetime(data_df['Date'], format='%d-%b-%Y')
-        
-        return data_df[index_data_columns]
+
+        df = df.rename(columns=column_mapping)
+
+        # # Convert Date
+        # df['Date'] = pd.to_datetime(df['Date'], format='%d-%b-%Y', errors='coerce')
+
+        # # Sort for time-series integrity
+        # df = df.sort_values('Date').reset_index(drop=True)
+
+        return df[index_data_columns]
+
 
     def index_pe_pb_div_historical_data(self, index: str, *args, from_date=None, to_date=None, period=None):
         """
@@ -1473,11 +1596,11 @@ class Nse:
         df.drop_duplicates(subset=["Date"], keep="last", inplace=True)
         df["Date"] = df["Date"].dt.strftime("%d-%b-%Y")
 
-        # --- Final Summary ---
-        if fail_chunks:
-            print(f"⚠️ {index}: {len(fail_chunks)} failed chunks → {fail_chunks}")
-        else:
-            print(f"✅ {index} data fetched successfully: {from_date} → {to_date}")
+        # # --- Final Summary ---
+        # if fail_chunks:
+        #     print(f"⚠️ {index}: {len(fail_chunks)} failed chunks → {fail_chunks}")
+        # else:
+        #     print(f"✅ {index} data fetched successfully: {from_date} → {to_date}")
 
         return df.reset_index(drop=True)
 
@@ -1652,11 +1775,11 @@ class Nse:
         df.drop_duplicates(subset=["Date"], keep="last", inplace=True)
         df["Date"] = df["Date"].dt.strftime("%d-%b-%Y")
 
-        # --- Print final summary ---
-        if fail_chunks:
-            print(f"⚠️ {symbol}: {len(fail_chunks)} failed chunks → {fail_chunks}")
-        else:
-            print(f"✅ {symbol} data fetched successfully: {from_date} → {to_date}")
+        # # --- Print final summary ---
+        # if fail_chunks:
+        #     print(f"⚠️ {symbol}: {len(fail_chunks)} failed chunks → {fail_chunks}")
+        # else:
+        #     print(f"✅ {symbol} data fetched successfully: {from_date} → {to_date}")
 
         return df.reset_index(drop=True)
 
@@ -1797,7 +1920,9 @@ class Nse:
                 "derivatives": data['securityInfo']['derivatives'],
                 "surveillance": data['securityInfo']['surveillance']['surv'],
                 "surveillanceDesc": data['securityInfo']['surveillance']['desc'],
-                "Facevalue": data['securityInfo']['faceValue']
+                "Facevalue": data['securityInfo']['faceValue'],
+                "TotalSharesIssued": data['securityInfo']['issuedSize']
+
             }
         except (requests.RequestException, ValueError):
             return None
@@ -1864,6 +1989,126 @@ class Nse:
             }
         except (requests.RequestException, ValueError):
             return None
+    
+
+    def cm_live_equity_full_info(self, symbol):
+        symbol = symbol.replace(" ", "%20").replace("&", "%26")
+        self.rotate_user_agent()
+
+        ref_url = f'https://www.nseindia.com/get-quotes/equity?symbol={symbol}'
+        api_url = (
+            "https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi"
+            f"?functionName=getSymbolData&marketType=N&series=EQ&symbol={symbol}"
+        )
+
+        try:
+            # Warm-up request
+            ref = self.session.get(ref_url, headers=self.headers, timeout=10)
+
+            response = self.session.get(
+                api_url,
+                headers=self.headers,
+                cookies=ref.cookies.get_dict(),
+                timeout=10
+            ).json()
+
+            equity = response.get("equityResponse", [])
+            if not equity:
+                return None
+
+            eq = equity[0]
+
+            meta   = eq.get("metaData", {})
+            trade  = eq.get("tradeInfo", {})
+            price  = eq.get("priceInfo", {})
+            sec    = eq.get("secInfo", {})
+            order  = eq.get("orderBook", {})
+
+            return {
+                # ================= BASIC =================
+                "Symbol": meta.get("symbol"),
+                "CompanyName": meta.get("companyName"),
+                "Index": sec.get("index"),
+                "ISIN": meta.get("isinCode"),
+                "Series": meta.get("series"),
+                "MarketType": meta.get("marketType"),
+                "BoardStatus": sec.get("boardStatus"),
+                "TradingSegment": sec.get("tradingSegment"),
+                "SecurityStatus": sec.get("secStatus"),
+
+                # ================= PRICE =================
+                "Open": meta.get("open"),
+                "DayHigh": meta.get("dayHigh"),
+                "DayLow": meta.get("dayLow"),
+                "PreviousClose": meta.get("previousClose"),
+                "LastTradedPrice": order.get("lastPrice"),
+                "closePrice": meta.get("closePrice"),
+                "Change": meta.get("change"),
+                "PercentChange": meta.get("pChange"),
+                "VWAP": meta.get("averagePrice"),
+
+                # ================= VOLUME =================
+                "TotalTradedVolume": trade.get("totalTradedVolume"),
+                "TotalTradedValue": trade.get("totalTradedValue"),
+                "Quantity raded": trade.get("quantitytraded"),
+                "DeliveryQty": trade.get("deliveryquantity"),
+                "DeliveryPercent": trade.get("deliveryToTradedQuantity"),
+                "ImpactCost": trade.get("impactCost"),                
+
+                # ================= CIRCUIT =================
+                "PriceBandRange": price.get("priceBand"),
+                "PriceBand": price.get("ppriceBand"),
+                "TickSize": price.get("tickSize"),
+                
+                # ================= ORDER BOOK =================
+                "Bid Price 1": order.get("buyPrice1"), "Bid Quantity 1": order.get("buyQuantity1"),
+                "Bid Price 2": order.get("buyPrice2"), "Bid Quantity 2": order.get("buyQuantity2"),
+                "Bid Price 3": order.get("buyPrice3"), "Bid Quantity 3": order.get("buyQuantity3"),
+                "Bid Price 4": order.get("buyPrice4"), "Bid Quantity 4": order.get("buyQuantity4"),
+                "Bid Price 5": order.get("buyPrice5"), "Bid Quantity 5": order.get("buyQuantity5"),
+
+                "Ask Price 1": order.get("sellPrice1"), "Ask Quantity 1": order.get("sellQuantity1"),
+                "Ask Price 2": order.get("sellPrice2"), "Ask Quantity 2": order.get("sellQuantity2"),
+                "Ask Price 3": order.get("sellPrice3"), "Ask Quantity 3": order.get("sellQuantity3"),
+                "Ask Price 4": order.get("sellPrice4"), "Ask Quantity 4": order.get("sellQuantity4"),
+                "Ask Price 5": order.get("sellPrice5"), "Ask Quantity 5": order.get("sellQuantity5"),
+
+                "TotalBuyQuantity": order.get("totalBuyQuantity"),
+                "TotalSellQuantity": order.get("totalSellQuantity"),
+                # "BuyQuantity%": order.get("perBuyQty"),
+                # "SellQuantity%": order.get("perSellQty"),
+                # "BuyQuantity%": f"{order.get('perBuyQty', 0):.2f} %",
+                # "SellQuantity%": f"{order.get('perSellQty', 0):.2f} %",
+                "BuyQuantity%": f"{order.get('perBuyQty', 0):.2f}",
+                "SellQuantity%": f"{order.get('perSellQty', 0):.2f}",  
+                              
+                # ================= FUNDAMENTAL =================
+                "52WeekHigh": price.get("yearHigh"),
+                "52WeekLow": price.get("yearLow"),
+                "52WeekHighDate": price.get("yearHightDt"),
+                "52WeekLowDate": price.get("yearLowDt"),
+                "DailyVolatility": price.get("cmDailyVolatility"),
+                "AnnualisedVolatility": price.get("cmAnnualVolatility"),               
+                "SymbolPE": sec.get("pdSymbolPe"),                
+                "FaceValue": trade.get("faceValue"),
+                "TotalIssuedShares": trade.get("issuedSize"),
+                "MarketCap": trade.get("totalMarketCap"),
+                "FreeFloatMcap": trade.get("ffmc"),
+                "DateOfListing": sec.get("listingDate"),                
+
+                # ================= SECTOR =================
+                "Macro": sec.get("macro"),
+                "Sector": sec.get("sector"),
+                "Industry": sec.get("industryInfo"),
+                "BasicIndustry": sec.get("basicIndustry"),
+
+                # ================= META =================
+                "LastUpdated": eq.get("lastUpdateTime")
+            }
+
+        except (requests.RequestException, ValueError, KeyError):
+            return None
+
 
     def cm_live_most_active_equity_by_value(self):
         self.rotate_user_agent()
@@ -3388,20 +3633,16 @@ class Nse:
     
     #---------------------------------------------------------- Live Chart Data ----------------------------------------------------------------
  
-    def nifty_chart(self, timeframe: str = "1D"):
+    def index_chart(self, index: str, timeframe: str = "1D"):
         """
-        Fetches chart data for NIFTY 50.
-        timeframe: "1D", "5D", "1M", etc.
-        Returns pandas DataFrame with: timestamp_ms, datetime_utc, datetime_ist, price, flag
+        Fetches chart data for index.
+        timeframe: "1D" "1M" "3M" "6M" "1Y" etc.
         """
+        index = index.upper().replace(' ', '%20').replace('&', '%26')
         self.rotate_user_agent()
 
-        home_url = "https://www.nseindia.com/"
-        api_url = (
-            "https://www.nseindia.com/api/NextApi/apiClient"
-            "?functionName=getGraphChart"
-            f"&type=NIFTY%2050&flag={timeframe}"
-        )
+        home_url = "https://www.nseindia.com/"  
+        api_url = (f"https://www.nseindia.com/api/NextApi/apiClient/indexTrackerApi?functionName=getIndexChart&&index={index}&flag={timeframe}")
 
         try:
             # Step 1: Get cookies
@@ -3443,8 +3684,9 @@ class Nse:
             return df
 
         except (requests.HTTPError, ValueError, KeyError) as e:
-            print("Error fetching NIFTY chart:", e)
+            print("Error fetching index chart:", e)
             return None
+        
         
     def stock_chart(self, symbol: str, timeframe: str = "1D"):
         """
@@ -3571,6 +3813,53 @@ class Nse:
         except Exception as e:
             print("FnO chart error:", e)
             return None
+
+
+    def india_vix_chart(self):
+        """
+        Fetches intraday chart data for India VIX.
+        """
+        self.rotate_user_agent()
+
+        home_url = "https://www.nseindia.com/market-data/live-market-indices"
+        api_url = "https://www.nseindia.com/api/chart-databyindex-dynamic?index=INDIA%20VIX&type=index"
+
+        try:
+            # Step 1: Get cookies
+            resp0 = self.session.get(home_url, headers=self.headers, timeout=10)
+            resp0.raise_for_status()
+            cookies = resp0.cookies.get_dict()
+
+            time.sleep(0.5)
+
+            # Step 2: Fetch chart data
+            resp = self.session.get(api_url, headers=self.headers, cookies=cookies, timeout=10)
+            resp.raise_for_status()
+            obj = resp.json()
+
+             # 🔥 Access grapthData directly
+            if "grapthData" not in obj:
+                raise ValueError("No 'grapthData' in response JSON")
+
+            rows = []
+            for ts, price, flag in obj["grapthData"]:
+                dt_utc = pd.to_datetime(ts, unit="ms", utc=True)
+
+                rows.append({
+                    # "timestamp_ms": ts,
+                    "datetime_utc": dt_utc.strftime("%Y-%m-%d %H:%M:%S"),
+                    "price": price,
+                    "flag": flag
+                })
+
+            df = pd.DataFrame(rows)
+            return df
+
+        except (requests.HTTPError, ValueError, KeyError) as e:
+            print("Error fetching India VIX chart:", e)
+            return None
+
+
 
     #---------------------------------------------------------- FnO_Live_Data ----------------------------------------------------------------
 
@@ -3753,6 +4042,93 @@ class Nse:
         except Exception as e:
             print(f"Error fetching futures data for {symbol}: {e}")
             return None
+        
+    def fno_live_top_20_derivatives_contracts(self, category='Stock Options'):
+        """
+        Fetch NSE live most active stock derivative contracts
+
+        category:
+        - 'Stock Options'
+        - 'Stock Futures'
+        """
+        contracts_xref = {"Stock Futures": "stock_fut", "Stock Options": "stock_opt"}
+        if category not in contracts_xref:
+            raise ValueError("Invalid category")
+             
+        self.rotate_user_agent()
+
+        ref_url = 'https://www.nseindia.com/market-data/equity-derivatives-watch'
+        ref = requests.get(ref_url, headers=self.headers)
+
+        url = f"https://www.nseindia.com/api/liveEquity-derivatives?index={contracts_xref[category]}"
+        try:
+            response = self.session.get(url, headers=self.headers, cookies=ref.cookies.get_dict(), timeout=10)
+            response.raise_for_status()
+            data = response.json()
+
+            df = pd.DataFrame(data['data'])
+            if df.empty:
+                return None
+
+            # --- Rename columns to readable short names ---
+            df.rename(columns={
+            'underlying': 'Symbol',
+            'identifier': 'Contract ID',
+            'instrumentType': 'Instr Type',
+            'instrument': 'Segment',
+            'contract': 'Contract',
+            'expiryDate': 'Expiry',
+            'optionType': 'Option',
+            'strikePrice': 'Strike',
+            'lastPrice': 'LTP',
+            'change': 'Chg',
+            'pChange': 'Chg %',
+            'openPrice': 'Open',
+            'highPrice': 'High',
+            'lowPrice': 'Low',
+            'closePrice': 'Close',
+            'volume': 'Volume (Cntr)',
+            'totalTurnover': 'Turnover (₹)',
+            'premiumTurnOver': 'Premium Turnover (₹)',
+            'underlyingValue': 'Underlying LTP',
+            'openInterest': 'OI (Cntr)',
+            'noOfTrades': 'Trades'
+            }, inplace=True)
+
+            # -----------------------------
+            # Convert ₹ to Crores
+            # -----------------------------
+            for col in ['Turnover (₹)', 'Premium Turnover (₹)']:
+                if col in df.columns:
+                    df[col] = (df[col] / 1e7).round(2)   # 1 Crore = 10,000,000
+
+            df.rename(columns={
+                'Turnover (₹)': 'Turnover (₹ Cr)',
+                'Premium Turnover (₹)': 'Premium Turnover (₹ Cr)'
+            }, inplace=True)
+
+            # -----------------------------
+            # Order columns logically
+            # -----------------------------
+            ordered_cols = [
+                'Segment','Symbol', 'Expiry',
+                'Option', 'Strike', 'Close',
+                'LTP', 'Chg', 'Chg %',
+                'Open', 'High', 'Low',
+                'Volume (Cntr)', 'Trades', 'OI (Cntr)',
+                'Premium Turnover (₹ Cr)', 'Turnover (₹ Cr)',
+                'Contract', 'Contract ID', 'Underlying LTP'
+            ]
+
+            df = df[[c for c in ordered_cols if c in df.columns]]
+
+            return df
+
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print("⚠️ Error fetching most active underlyings:", e)
+            return None
+
+
 
     def fno_live_most_active_futures_contracts(self, mode="Volume"):
         """
@@ -3994,6 +4370,110 @@ class Nse:
             print("⚠️ Error fetching most active underlyings:", e)
             return None
 
+
+    def fno_live_oi_vs_price(self):
+        self.rotate_user_agent()
+
+        ref_url = 'https://www.nseindia.com/market-data/oi-spurts'
+        ref = requests.get(ref_url, headers=self.headers)
+
+        url = 'https://www.nseindia.com/api/live-analysis-oi-spurts-contracts'
+
+        try:
+            response = self.session.get(
+                url,
+                headers=self.headers,
+                cookies=ref.cookies.get_dict(),
+                timeout=10
+            )
+            response.raise_for_status()
+            json_data = response.json()
+
+            rows = []
+
+            # -------------------------------
+            # FLATTEN NEW JSON STRUCTURE
+            # -------------------------------
+            for block in json_data.get("data", []):
+                for category, contracts in block.items():
+                    for c in contracts:
+                        c["OI_Price_Signal"] = category
+                        rows.append(c)
+
+            if not rows:
+                return None
+
+            df = pd.DataFrame(rows)
+
+            # -------------------------------
+            # RENAME COLUMNS
+            # -------------------------------
+            df.rename(columns={
+                'symbol'           : 'Symbol',
+                'instrument'       : 'Instrument',
+                'expiryDate'       : 'Expiry',
+                'optionType'       : 'Type',
+                'strikePrice'      : 'Strike',
+                'ltp'              : 'LTP',
+                'prevClose'        : 'Prev Close',
+                'pChange'          : '% Price Chg',
+                'latestOI'         : 'Latest OI',
+                'prevOI'           : 'Prev OI',
+                'changeInOI'       : 'Chg in OI',
+                'pChangeInOI'      : '% OI Chg',
+                'volume'           : 'Volume',
+                'turnover'         : 'Turnover ₹L',
+                'premTurnover'     : 'Premium ₹L',
+                'underlyingValue'  : 'Underlying Price'
+            }, inplace=True)
+
+            # -------------------------------
+            # ORDER COLUMNS (TRADING LOGIC)
+            # -------------------------------
+            ordered_cols = [
+                'OI_Price_Signal',
+                'Symbol', 'Instrument', 'Expiry', 'Type', 'Strike',
+                'LTP', '% Price Chg',
+                'Latest OI', 'Prev OI', 'Chg in OI', '% OI Chg',
+                'Volume',
+                'Turnover ₹L', 'Premium ₹L',
+                'Underlying Price'
+            ]
+
+            df = df[[c for c in ordered_cols if c in df.columns]]
+
+            return df
+
+        except Exception as e:
+            print("⚠️ OI Spurts Fetch Error:", e)
+            return None
+        
+    def fno_expiry_dates_raw(self,symbol: str="NIFTY"):
+        self.rotate_user_agent()  # Rotating User-Agent
+
+        ref_url = 'https://www.nseindia.com/option-chain'
+        api_url = f"https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getOptionChainDropdown&symbol={symbol}"
+
+        # --- Fetch & process ---
+
+        try:
+            # Get reference cookies from the main page
+            ref_response = self.session.get(ref_url, headers=self.headers, timeout=10)
+            ref_response.raise_for_status()  # Ensure request was successful
+
+            # Make API call using cookies from the previous request
+            response = self.session.get(api_url, headers=self.headers, cookies=ref_response.cookies.get_dict(), timeout=10)
+            response.raise_for_status()  # Ensure request was successful
+
+            # Convert response to JSON
+            data = response.json()
+
+            return data
+
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print(f"Error fetching data: {e}")
+            return None   
+
     def fno_expiry_dates(self, symbol="NIFTY", label_filter=None):
         from datetime import datetime, time
 
@@ -4094,38 +4574,33 @@ class Nse:
                 return None
             return pd.to_datetime(df_filtered.loc[0, "Expiry Date"], format='%d-%b-%Y').strftime("%d-%m-%Y")
 
-    # def fno_live_option_chain_raw(self, symbol: str, expiry_date: str = None):
-    #     # List of NSE indices
-    #     index_symbols = ["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY", "NIFTYNXT50"]
+    def fno_live_option_chain_raw(self, symbol: str, expiry_date: str = None,):
+        symbol = symbol.upper().replace(' ', '%20').replace('&', '%26')
+        self.rotate_user_agent()  # Rotating User-Agent
 
-    #     # Determine if the symbol is an index
-    #     indices = symbol.upper() in index_symbols
+        ref_url = 'https://www.nseindia.com/option-chain'
+        api_url = f"https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getOptionChainData&symbol={symbol}&params=expiryDate={expiry_date}"
 
-    #     symbol = symbol.replace(' ', '%20').replace('&', '%26')
-    #     self.rotate_user_agent()
-        
-    #     ref_url = f'https://www.nseindia.com/get-quotes/derivatives?symbol={symbol}'
-    #     ref = requests.get(ref_url, headers=self.headers)
-        
-    #     url = f"https://www.nseindia.com/api/option-chain-{'indices' if indices else 'equities'}?symbol={symbol}"
-        
-    #     try:
-    #         payload = self.session.get(url, headers=self.headers, cookies=ref.cookies.get_dict(), timeout=10).json()
-            
-    #         # Filter by expiry_date if provided
-    #         if expiry_date:
-    #             payload['records']['data'] = [
-    #                 item for item in payload['records']['data'] if item['expiryDate'] == expiry_date
-    #             ]
-            
-    #         return payload
-        
-    #     except requests.exceptions.RequestException as e:
-    #         print(f"Request failed: {e}")
-    #         return None
-    #     except ValueError as e:
-    #         print(f"Failed to parse JSON: {e}")
-    #         return None
+        # --- Fetch & process ---
+
+        try:
+            # Get reference cookies from the main page
+            ref_response = self.session.get(ref_url, headers=self.headers, timeout=10)
+            ref_response.raise_for_status()  # Ensure request was successful
+
+            # Make API call using cookies from the previous request
+            response = self.session.get(api_url, headers=self.headers, cookies=ref_response.cookies.get_dict(), timeout=10)
+            response.raise_for_status()  # Ensure request was successful
+
+            # Convert response to JSON
+            data = response.json()
+
+            return data
+
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print(f"Error fetching data: {e}")
+            return None  
+
 
     def fno_live_option_chain(self, symbol: str, expiry_date: str = None, oi_mode: str = "full"):
         # symbol = symbol.upper().replace(' ', '%20').replace('&', '%26')
@@ -4295,7 +4770,7 @@ class Nse:
 
             # Convert expiry date to NSE format
             if expiry_date:
-                exp = pd.to_datetime(expiry_date, format="%d-%m-%Y")
+                exp = pd.to_datetime(expiry_date, format="%d-%b-%Y")
                 expiry_date = exp.strftime("%d-%b-%Y")
 
             # Filter by expiry date if provided
@@ -5561,7 +6036,7 @@ class Nse:
                                 for rec in js["data"]:
                                     rec["FinancialYear"] = fin_year
                                 all_data.extend(js["data"])
-                                print(f"✅ {fin_year} data fetched ({len(js['data'])} records).")
+                                # print(f"✅ {fin_year} data fetched ({len(js['data'])} records).")
                             else:
                                 print(f"⚠️ No data in API for {fin_year}.")
                             break
@@ -5917,7 +6392,7 @@ class Nse:
         try:
             # Convert date (expects dd-mm-YYYY)
             trade_date = datetime.strptime(trade_date, "%d-%m-%Y")
-            url = f"https://nsearchives.nseindia.com/archives/fo/mkt/fo{trade_date.strftime('%d%m%Y').upper()}.zip"
+            url = f"https://nsearchives.nseindia.com/archives/fo/mkt/fo{trade_date.strftime('%d%m%Y')}.zip"
 
             # Fetch ZIP
             request_bhav = requests.get(url, headers=self.headers, timeout=10)
@@ -5937,6 +6412,7 @@ class Nse:
         except Exception as e:
             print(f"❌ Error fetching Top 20 Option for {raw_trade_date}: {e}")
             return None
+
 
     def fno_eod_sec_ban(self, trade_date: str):
         self.rotate_user_agent()
@@ -6706,12 +7182,12 @@ class Nse:
                                 for rec in js:
                                     rec["FinancialYear"] = fin_year
                                 all_data.extend(js)
-                                print(f"✅ {fin_year} data fetched ({len(js)} records).")
+                                # print(f"✅ {fin_year} data fetched ({len(js)} records).")
                             elif "data" in js and isinstance(js["data"], list) and js["data"]:
                                 for rec in js["data"]:
                                     rec["FinancialYear"] = fin_year
                                 all_data.extend(js["data"])
-                                print(f"✅ {fin_year} data fetched ({len(js['data'])} records).")
+                                # print(f"✅ {fin_year} data fetched ({len(js['data'])} records).")
                             else:
                                 empty_fys.append(fin_year)
                                 print(f"⚠️ No data for {fin_year}.")
@@ -6754,7 +7230,7 @@ class Nse:
             df["Month"] = df["Month_dt"].dt.strftime('%b-%Y')  # keep display format
             df.drop(columns=["Month_dt"], inplace=True)
 
-            print(f"ℹ️ Data fetching complete from FY {from_year} to FY {to_year-1}.")
+            # print(f"ℹ️ Data fetching complete from FY {from_year} to FY {to_year-1}.")
             if empty_fys:
                 print(f"⚠️ No data found for FYs: {', '.join(empty_fys)}")
 
@@ -6931,3 +7407,54 @@ class Nse:
 
         return df
     
+    def quarterly_financial_results(self,symbol: str):
+        self.rotate_user_agent()  # Rotating User-Agent
+
+        ref_url = 'https://www.nseindia.com/'
+        api_url = f"https://www.nseindia.com/api/NextApi/apiClient/GetQuoteApi?functionName=getIntegratedFilingData&symbol={symbol}"
+
+        # --- Fetch & process ---
+
+        try:
+            # Get reference cookies from the main page
+            ref_response = self.session.get(ref_url, headers=self.headers, timeout=10)
+            ref_response.raise_for_status()  # Ensure request was successful
+
+            # Make API call using cookies from the previous request
+            response = self.session.get(api_url, headers=self.headers, cookies=ref_response.cookies.get_dict(), timeout=10)
+            response.raise_for_status()  # Ensure request was successful
+
+            # Convert response to JSON
+            data = response.json()
+
+            return data
+
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print(f"Error fetching data: {e}")
+            return None   
+        
+    def list_of_indices(self):
+        self.rotate_user_agent()  # Rotating User-Agent
+
+        ref_url = 'https://www.nseindia.com/'
+        api_url = f"https://www.nseindia.com/api/equity-master"
+
+        # --- Fetch & process ---
+
+        try:
+            # Get reference cookies from the main page
+            ref_response = self.session.get(ref_url, headers=self.headers, timeout=10)
+            ref_response.raise_for_status()  # Ensure request was successful
+
+            # Make API call using cookies from the previous request
+            response = self.session.get(api_url, headers=self.headers, cookies=ref_response.cookies.get_dict(), timeout=10)
+            response.raise_for_status()  # Ensure request was successful
+
+            # Convert response to JSON
+            data = response.json()
+
+            return data
+
+        except (requests.RequestException, ValueError, KeyError) as e:
+            print(f"Error fetching data: {e}")
+            return None 

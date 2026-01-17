@@ -37,7 +37,7 @@ TICKERS       = ["360ONE.NS", "3MINDIA.NS", "ABB.NS", "ACC.NS", "ACMESOLAR.NS", 
 PERIOD        = "1mo"                #   "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y","5y", "10y", "ytd", "max"
 INTERVAL      = "1d"                 #   "1m", "2m", "5m", "15m", "30m", "60m"/"1h", "90m",      "1d", "5d", "1wk", "1mo", "3mo"
 
-OUTDIR        = "outputs/candle_analysis/"
+OUTDIR        = "outputs/candle_analysis"
 SAVE_RAW      = False                # True False
 SAVE_PLOTS    = True                 # True False
 

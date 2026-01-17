@@ -296,15 +296,18 @@ if __name__ == '__main__':
         # Example limit for testing if running standalone
         # tickers = tickers[:5] 
         # But we will fetch all if requested.
-        
+    
+        period          = "1y"              #   Using 1y as fetched
+        interval        = "1d"      
+
         print("Checking local cache or fetching data...")
-        data_map = stock_data_manager.get_data(tickers, period='1y', interval='1d')
+        data_map = stock_data_manager.get_data(tickers, period=period, interval=interval)
         
         summary, all_levels = run_fractal_sr(
             tickers,
     
-            period          = "1y"   ,              #   Using 1y as fetched
-            interval        = "1d"  ,                
+            # period          = "6mo"   ,              #   Using 1y as fetched
+            # interval        = "1d"  ,                
     
             use_local       = False,
             local_dir       = r"D:\Prasad\Trading\01. Py\0. Main\3. SMC Analysis & Screener\Stocks",
