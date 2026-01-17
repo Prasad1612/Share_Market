@@ -1,2 +1,4 @@
-Stock,Current Price,Date,Gap Type,Gap Size,Gap Range,Near Price,Gap Size %,Gap Dist Start %,Gap Dist End %
-HDFCBANK,925.00,15-04-25,Bullish Gap,10.50,"(909.70, 920.20)",TRUE,1.16,0.52,1.65
+Stock,Current Price,Date,Gap Type,Gap Size,Gap Range,Near Price,Gap Size %,Gap Dist Start %,Gap Dist End %,Status
+CIPLA,1397.50,16-01-26,Bearish Gap,16.20,"(1425.70, 1409.50)",TRUE,1.14,-0.86,-2.02,Fresh
+HDFCBANK,931.10,15-04-25,Bullish Gap,9.50,"(909.70, 919.20)",TRUE,1.04,1.28,2.30,Touched
+INFY,1689.80,16-01-26,Bullish Gap,36.40,"(1617.00, 1653.40)",TRUE,2.25,2.15,4.31,Fresh

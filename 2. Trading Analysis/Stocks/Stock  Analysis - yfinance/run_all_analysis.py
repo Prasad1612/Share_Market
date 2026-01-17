@@ -21,10 +21,12 @@ def main():
     # For testing, you can limit tickers here. Comment out for production.
     # tickers = tickers[:5] 
     
-    # get_data handles cache checking automatically
-    data_map = stock_data_manager.get_data(tickers, period="1y", interval="1d")
-    
-    if not data_map:
+    # get_data handles cache checking and smart slicing automatically
+    LTP_Near_Gaps       = stock_data_manager.get_data(tickers, period="1y", interval="1d")
+    Support_Resistance  = stock_data_manager.get_data(tickers, period="1y", interval="1d")
+    Candle_Analysis     = stock_data_manager.get_data(tickers, period="1mo", interval="1d")
+
+    if not LTP_Near_Gaps:
         print("❌ No data fetched. Exiting.")
         return
 
@@ -38,10 +40,10 @@ def main():
         for group_name, group_tickers in groups.items():
             print(f"   > Processing Group: {group_name}...")
             # Filter tickers that are in data_map
-            valid_tickers = [t for t in group_tickers if t in data_map]
+            valid_tickers = [t for t in group_tickers if t in LTP_Near_Gaps]
             
             if valid_tickers:
-                gaps = ltp_module.detect_gaps(data_map, valid_tickers)
+                gaps = ltp_module.detect_gaps(LTP_Near_Gaps, valid_tickers)
                 ltp_module.save_to_csv(gaps, filename=f"gaps_{group_name}.csv")
             else:
                 print(f"     No valid data for group {group_name}")
@@ -55,13 +57,13 @@ def main():
         sr_module = load_module_from_path("support_resistance", "Support and Resistance.py")
         
         # Pass all tickers or a specific list. Passing all unique available tickers.
-        all_available_tickers = list(data_map.keys())
+        all_available_tickers = list(Support_Resistance.keys())
         
         sr_module.run_fractal_sr(
             all_available_tickers, 
             period="1y", 
             interval="1d", 
-            data_dict=data_map,
+            data_dict=Support_Resistance,
             save_charts=True,
             plot=False,
             out_dir='outputs/support_resistance/' # separate folder to distinguish
@@ -74,10 +76,23 @@ def main():
     print("\n4️⃣  Running Candle & Gap Analysis...")
     try:
         candle_module = load_module_from_path("candle_analysis", "candle & gap analysis.py")
-        candle_module.run(data_dict=data_map)
+        candle_module.run(data_dict=Candle_Analysis)
         
     except Exception as e:
         print(f"❌ Error running Candle & Gap Analysis: {e}")
+
+    # 5. Fibonacci Levels Analysis
+    print("\n5️⃣  Running Fibonacci Levels Analysis...")
+    try:
+        fib_module = load_module_from_path("fibonacci_analysis", "Fibonacci Levels.py")
+        
+        # Use a group for analysis (e.g., nifty_500 as default or whatever is in stock_data_manager)
+        all_tickers = stock_data_manager.get_combined_ticker_list()
+        
+        fib_module.run_analysis(all_tickers, data_dict=Support_Resistance) # Re-using Support_Resistance cache (1y data)
+        
+    except Exception as e:
+        print(f"❌ Error running Fibonacci Analysis: {e}")
 
     print("\n✅ All Analyses Completed Successfully!")
 

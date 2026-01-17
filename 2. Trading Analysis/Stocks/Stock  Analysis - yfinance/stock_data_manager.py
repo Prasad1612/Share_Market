@@ -16,7 +16,10 @@ warnings.filterwarnings("ignore")
 CACHE_DIR = "data_cache"
 CACHE_EXPIRY_HOURS = 4  # Refresh data every 4 hours
 BATCH_SIZE = 50         # Stocks per batch
-BATCH_DELAY = 2.0       # Delay between batches (API safety)
+BATCH_DELAY = 1.0       # Delay between batches (API safety)
+
+# Period hierarchy for smart cache selection
+PERIOD_ORDER = ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"]
 
 # ======================================================
 # 🗂 STOCK LISTS
@@ -81,6 +84,55 @@ def load_from_cache(period):
     print(f"📖 Loaded data from local cache: {path}")
     return data
 
+def slice_data_dict(data_dict, period):
+    """
+    Slices each DataFrame in the dictionary to match the requested period.
+    """
+    if not data_dict or period == "max":
+        return data_dict
+    
+    sliced_dict = {}
+    for ticker, df in data_dict.items():
+        if df.empty:
+            sliced_dict[ticker] = df
+            continue
+            
+        # Determine the start date for the slice
+        last_date = df.index.max()
+        
+        if period == "1d":
+            sliced_dict[ticker] = df.tail(1)
+        elif period == "5d":
+            # For 5d, we skip time-based slicing and just take last 5 trading days 
+            # as it's more reliable for small sessions
+            sliced_dict[ticker] = df.tail(5)
+        elif period == "1mo":
+            start_date = last_date - pd.DateOffset(months=1)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        elif period == "3mo":
+            start_date = last_date - pd.DateOffset(months=3)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        elif period == "6mo":
+            start_date = last_date - pd.DateOffset(months=6)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        elif period == "1y":
+            start_date = last_date - pd.DateOffset(years=1)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        elif period == "2y":
+            start_date = last_date - pd.DateOffset(years=2)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        elif period == "5y":
+            start_date = last_date - pd.DateOffset(years=5)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        elif period == "ytd":
+            start_date = datetime(last_date.year, 1, 1)
+            sliced_dict[ticker] = df[df.index >= start_date]
+        else:
+            # Fallback for others (2y, 5y, etc.)
+            sliced_dict[ticker] = df
+            
+    return sliced_dict
+
 # ======================================================
 # 📥 DATA FETCHING
 # ======================================================
@@ -131,27 +183,31 @@ def fetch_all_data(tickers, period="1y", interval="1d"):
 
 def get_data(tickers=None, period="1y", interval="1d", force_refresh=False):
     """
-    Main entry point for retrieving data. Check cache first.
+    Main entry point for retrieving data. Check cache first, then larger caches, then fetch.
     """
     cache_path = get_cache_path(period)
     
+    # 1. Check if exact period cache exists and is valid
     if not force_refresh and is_cache_valid(cache_path):
         data = load_from_cache(period)
-        
-        # If specific tickers are requested, filter the cache
-        if tickers:
-            filtered_data = {t: data[t] for t in tickers if t in data}
-            
-            # If we are missing more than 20% of requested tickers, might as well refetch or return what we have
-            missing = set(tickers) - set(data.keys())
-            if missing and len(missing) > len(tickers) * 0.2:
-                print(f"⚠️ Cache missing {len(missing)} stocks. Refetching...")
-                return get_data(tickers, period, interval, force_refresh=True)
-            
-            return filtered_data
-        return data
+        return _prepare_return_data(data, tickers, period, interval)
 
-    # Fresh fetch required
+    # 2. Check if a larger period cache exists and is valid
+    if not force_refresh:
+        try:
+            req_idx = PERIOD_ORDER.index(period)
+            # Look at all periods larger than the requested one
+            for p in PERIOD_ORDER[req_idx + 1:]:
+                larger_path = get_cache_path(p)
+                if is_cache_valid(larger_path):
+                    print(f"💡 Larger valid cache found ({p}). Slicing for {period}...")
+                    data = load_from_cache(p)
+                    data = slice_data_dict(data, period)
+                    return _prepare_return_data(data, tickers, period, interval)
+        except ValueError:
+            pass # period not in PERIOD_ORDER
+
+    # 3. Fresh fetch required
     if tickers is None:
         tickers = get_combined_ticker_list()
         
@@ -159,6 +215,21 @@ def get_data(tickers=None, period="1y", interval="1d", force_refresh=False):
     if data:
         save_to_cache(data, period)
     return data
+
+def _prepare_return_data(data, tickers, period, interval):
+    """Helper to filter by tickers and handle missing data."""
+    if not tickers:
+        return data
+        
+    filtered_data = {t: data[t] for t in tickers if t in data}
+    
+    # If we are missing more than 20% of requested tickers, refetch
+    missing = set(tickers) - set(data.keys())
+    if missing and len(missing) > len(tickers) * 0.2:
+        print(f"⚠️ Cache missing {len(missing)} stocks. Refetching...")
+        return get_data(tickers, period, interval, force_refresh=True)
+    
+    return filtered_data
 
 if __name__ == "__main__":
     # Test fetch (first 10 stocks)

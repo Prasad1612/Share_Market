@@ -1,3 +1,1 @@
-Stock,Current Price,Date,Gap Type,Gap Size,Gap Range,Near Price,Gap Size %,Gap Dist Start %,Gap Dist End %
-^CNXFMCG,52258.65,02-01-26,Bearish Gap,1272.50,"(55055.10, 53782.60)",TRUE,2.29,-2.92,-5.35
-^CNXREALTY,850.05,12-05-25,Bullish Gap,8.35,"(835.25, 843.60)",TRUE,1.01,0.76,1.74
+Stock,Current Price,Date,Gap Type,Gap Size,Gap Range,Near Price,Gap Size %,Gap Dist Start %,Gap Dist End %,Status
