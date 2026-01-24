@@ -1,43 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trade Analyzer & Position Size</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #1e293b;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #475569;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #64748b;
         }
+
         /* Hide number input arrows */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     </style>
 </head>
+
 <body class="bg-slate-900 text-slate-200 min-h-screen font-sans selection:bg-blue-500 selection:text-white">
 
-    <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999] hidden transition-opacity duration-300 opacity-0">
-        <div class="bg-slate-800 rounded-xl p-6 shadow-2xl max-w-sm w-11/12 border border-slate-700 transform transition-all duration-300 scale-95">
+    <div id="custom-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999] hidden transition-opacity duration-300 opacity-0">
+        <div
+            class="bg-slate-800 rounded-xl p-6 shadow-2xl max-w-sm w-11/12 border border-slate-700 transform transition-all duration-300 scale-95">
             <h3 class="text-xl font-semibold text-red-400 mb-3 flex items-center gap-2">
                 <i data-lucide="alert-triangle" class="w-6 h-6"></i> Validation Error
             </h3>
             <p id="modal-message" class="text-slate-300 mb-6"></p>
-            <button onclick="hideModal()" class="w-full bg-red-600 hover:bg-red-500 text-white font-medium py-2 rounded-lg transition-colors">
+            <button onclick="hideModal()"
+                class="w-full bg-red-600 hover:bg-red-500 text-white font-medium py-2 rounded-lg transition-colors">
                 Got It
             </button>
         </div>
@@ -48,241 +58,557 @@
             <div class="flex items-center justify-between h-16 overflow-x-auto">
                 <div class="flex items-center flex-shrink-0 gap-2 pr-4">
                     <i data-lucide="candlestick-chart" class="text-blue-500 w-8 h-8"></i>
-                    <span class="font-bold text-xl tracking-tight text-white">Trade<span class="text-blue-500">Mate</span></span>
+                    <span class="font-bold text-xl tracking-tight text-white">Trade<span
+                            class="text-blue-500">Mate</span></span>
                 </div>
                 <div class="flex space-x-4 text-sm font-medium flex-shrink-0">
-                    <button onclick="showTab('analyzer')" id="btn-analyzer" class="px-3 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-500 transition-colors whitespace-nowrap">Analyzer</button>
-                    <button onclick="showTab('average')" id="btn-average" class="px-3 py-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors whitespace-nowrap">Avg. Price</button>
+                    <button onclick="showTab('institutional')" id="btn-institutional"
+                        class="px-3 py-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-500 transition-colors whitespace-nowrap">Institutional
+                        Mgr</button>
+                    <button onclick="showTab('simulator')" id="btn-simulator"
+                        class="px-3 py-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors whitespace-nowrap">Risk
+                        Simulator</button>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
-        
-        <div id="tab-analyzer" class="space-y-6">
+
+
+        </div>
+
+        <div id="tab-simulator" class="hidden space-y-6">
             <div class="bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-700 shadow-xl">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
-                    <div class="p-2 bg-blue-500/10 rounded-lg">
-                        <i data-lucide="sigma" class="text-blue-500 w-6 h-6"></i>
+                    <div class="p-2 bg-red-500/10 rounded-lg">
+                        <i data-lucide="activity" class="text-red-500 w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-semibold text-white">Trade Analyzer</h2>
-                        <p class="text-slate-400 text-sm">Input data to instantly view position size and risk metrics.</p>
+                        <h2 class="text-lg font-semibold text-white">Capital Survival Simulator</h2>
+                        <p class="text-slate-400 text-sm">Visualize capital decay during a continuous losing streak.
+                        </p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
+                    <!-- Controls -->
                     <div class="space-y-4 lg:col-span-1">
-                        <h3 class="text-md font-semibold text-blue-400 border-b border-slate-700 pb-2">Account & Trade Type</h3>
-
-                        <div class="space-y-2">
-                            <label class="block text-xs sm:text-sm font-medium text-slate-400">Trade Direction</label>
-                            <div class="flex bg-slate-700 rounded-lg p-1" oninput="calcTradeAnalyzer()">
-                                <input type="radio" id="trade-buy" name="trade-type" value="buy" class="hidden peer/buy" checked />
-                                <label for="trade-buy"
-                                    class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-white font-medium bg-slate-600 peer-checked/buy:bg-green-600">
-                                    Buy (Long)
-                                </label>
-
-                                <!-- SELL -->
-                                <input type="radio" id="trade-sell" name="trade-type" value="sell" class="hidden peer/sell" />
-                                <label for="trade-sell"
-                                    class="flex-1 text-center py-2 rounded-lg cursor-pointer transition-colors text-white font-medium bg-slate-600 peer-checked/sell:bg-red-600">
-                                    Sell (Short)
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Total Account Capital (₹)</label>
-                                <input type="number" id="pos-capital" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="100000">
-                            </div>
-                            <div>
-                                <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Risk per Trade (%)</label>
-                                <input type="number" id="pos-risk-percent" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="1">
-                            </div>
+                        <div>
+                            <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Total Capital
+                                (₹)</label>
+                            <input type="number" id="sim-capital" oninput="calcSurvival()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-red-500 outline-none"
+                                placeholder="100000" value="100000">
                         </div>
 
                         <div>
-                            <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Intraday Leverage (X)</label>
-                            <input type="number" id="intraday-leverage" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="1" value="1">
+                            <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Risk Mode</label>
+                            <div class="flex bg-slate-700 rounded-lg p-1">
+                                <input type="radio" id="risk-mode-pct" name="risk-mode" value="pct"
+                                    class="hidden peer/pct" checked onchange="calcSurvival()" />
+                                <label for="risk-mode-pct"
+                                    class="flex-1 text-center py-2 rounded-lg cursor-pointer text-white text-xs bg-slate-600 peer-checked/pct:bg-blue-600 transition-all">
+                                    % of Current Cap
+                                </label>
+                                <input type="radio" id="risk-mode-fixed" name="risk-mode" value="fixed"
+                                    class="hidden peer/fixed" onchange="calcSurvival()" />
+                                <label for="risk-mode-fixed"
+                                    class="flex-1 text-center py-2 rounded-lg cursor-pointer text-white text-xs bg-slate-600 peer-checked/fixed:bg-blue-600 transition-all">
+                                    Fixed Amt (₹)
+                                </label>
+                            </div>
                         </div>
 
-                        <h3 class="text-md font-semibold text-blue-400 border-b border-slate-700 pb-2 pt-4">Trade Setup Prices</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Entry Price</label>
-                                <input type="number" id="pos-entry" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="100">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
+                        <div id="input-risk-pct-group">
+                            <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Risk per Trade
+                                (%)</label>
+                            <input type="number" id="sim-risk-pct" oninput="calcSurvival()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 outline-none"
+                                value="1" placeholder="1">
+                        </div>
+                        <div id="input-risk-amt-group" class="hidden">
+                            <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Risk per Trade
+                                (₹)</label>
+                            <input type="number" id="sim-risk-amt" oninput="calcSurvival()"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 outline-none"
+                                placeholder="1000">
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-700">
+                            <p class="text-xs text-slate-500 mb-2">Stop when capital drops below (%):</p>
+                            <input type="number" id="sim-threshold-pct" oninput="calcSurvival()" value="0"
+                                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 text-sm text-white focus:border-red-500 outline-none"
+                                placeholder="0">
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-700">
+                            <h4 class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Time &
+                                Recovery</h4>
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Stop Loss</label>
-                                    <input type="number" id="pos-sl" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="95">
+                                    <label class="block text-[10px] text-slate-500 mb-1">Trades / Day</label>
+                                    <input type="number" id="sim-trades-per-day" oninput="calcSurvival()" value="3"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 text-sm text-white focus:border-blue-500 outline-none">
                                 </div>
-                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-slate-400 mb-1">Target Price</label>
-                                    <input type="number" id="pos-target" oninput="calcTradeAnalyzer()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 sm:px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="120">
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1">Avg R:R</label>
+                                    <input type="number" id="sim-avg-rr" oninput="calcSurvival()" value="2"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 text-sm text-white focus:border-green-500 outline-none"
+                                        title="Risk:Reward Ratio for Recovery Calc">
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Graph -->
                     <div class="lg:col-span-2 space-y-4">
-                        
-                        <div class="bg-slate-900/50 rounded-xl p-4 sm:p-6 border border-slate-700 space-y-4">
-                            <h3 class="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
-                                <i data-lucide="trending-up" class="w-5 h-5 text-green-400"></i> Target Profit / Loss
-                            </h3>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Target P&L (₹)</p>
-                                    <p id="res-target-profit-amt" class="text-xl font-bold text-green-400 mt-1">0</p>
-                                </div>
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Return (% on Margin Used)</p>
-                                    <p id="res-target-profit-pct-required" class="text-xl font-bold text-green-400 mt-1">0.00%</p>
-                                </div>
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Return (% on Total Capital)</p>
-                                    <p id="res-target-profit-pct-total" class="text-xl font-bold text-green-400 mt-1">0.00%</p>
-                                </div>
+                        <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700 h-64 sm:h-80 relative">
+                            <canvas id="survivalChart"></canvas>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-center">
+                                <p class="text-xs text-slate-400 uppercase">Survival Duration</p>
+                                <p id="sim-res-trades" class="text-xl font-bold text-red-500">0 Trades</p>
+                                <p id="sim-res-days" class="text-xs text-slate-500 mt-1">~0 Days</p>
+                            </div>
+                            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-center">
+                                <p class="text-xs text-slate-400 uppercase">Final Capital Remaining</p>
+                                <p id="sim-res-capital" class="text-xl font-bold text-white">₹0</p>
                             </div>
                         </div>
 
-                        <div class="bg-slate-900/50 rounded-xl p-4 sm:p-6 border border-slate-700 space-y-4">
-                            <h3 class="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
-                                <i data-lucide="credit-card" class="w-5 h-5 text-blue-400"></i>Position Sizing & Margin
+                        <!-- Recovery Section -->
+                        <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700">
+                            <h3 class="text-sm font-semibold text-white flex items-center gap-2 mb-3">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 text-orange-400"></i> Recovery Analysis
                             </h3>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Quantity</p>
-                                    <p id="res-qty" class="text-xl font-bold text-white mt-1">0</p>
-                                </div>
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Max Risk Amt (₹)</p>
-                                    <p id="res-risk-amt" class="text-xl font-bold text-red-400 mt-1">0</p>
-                                </div>
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Risk % (Actual)</p>
-                                    <p id="res-risk-percent-out" class="text-xl font-bold text-red-400 mt-1">0%</p>
-                                </div>
-                                <div class="p-2 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Required Margin (₹)</p>
-                                    <p id="res-capital-req" class="text-xl font-bold text-blue-400 mt-1">0</p>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-900/50 rounded-xl p-4 sm:p-6 border border-slate-700 space-y-4">
-                            <h3 class="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-700 pb-2">
-                                <i data-lucide="scale" class="w-5 h-5 text-purple-400"></i> Risk:Reward Analysis
-                            </h3>
-                            
                             <div class="grid grid-cols-3 gap-4 text-center">
-                                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Risk/Share</p>
-                                    <p id="rr-risk-val" class="text-xl font-bold text-red-400 mt-1">0.00</p>
+                                <div>
+                                    <p class="text-[10px] text-slate-500 uppercase">Drawdown</p>
+                                    <p id="sim-rec-drawdown" class="text-lg font-bold text-red-500">0%</p>
                                 </div>
-                                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Reward/Share</p>
-                                    <p id="rr-reward-val" class="text-xl font-bold text-green-400 mt-1">0.00</p>
+                                <div>
+                                    <p class="text-[10px] text-slate-500 uppercase">Req. Gain</p>
+                                    <p id="sim-rec-gain" class="text-lg font-bold text-orange-400">0%</p>
                                 </div>
-                                <div class="p-3 bg-slate-800 rounded-lg border border-slate-700">
-                                    <p class="text-xs text-slate-400 uppercase tracking-wider">Ratio</p>
-                                    <p id="rr-ratio-val" class="text-xl font-bold text-white mt-1">1 : 0</p>
+                                <div>
+                                    <p class="text-[10px] text-slate-500 uppercase">Trades to Rec.</p>
+                                    <p id="sim-rec-trades" class="text-lg font-bold text-green-400">0</p>
+                                    <p id="sim-rec-days" class="text-[10px] text-slate-500 font-medium">~0 Days</p>
                                 </div>
                             </div>
-
-                            <div class="relative h-4 bg-slate-700 rounded-full overflow-hidden w-full mt-4">
-                                <div id="risk-bar" class="absolute left-0 top-0 h-full bg-red-500 transition-all duration-500" style="width: 50%"></div>
-                                <div id="reward-bar" class="absolute right-0 top-0 h-full bg-green-500 transition-all duration-500" style="width: 50%"></div>
-                            </div>
-                            <div class="flex justify-between text-xs text-slate-500 mt-2 px-1">
-                                <span>SL</span>
-                                <span>Entry</span>
-                                <span>Target</span>
-                            </div>
-                            
-                            <div id="rr-verdict" class="mt-4 text-center py-2 rounded bg-slate-800 text-sm font-medium text-slate-300">
-                                Enter all trade values to see analysis
-                            </div>
+                            <p class="text-[10px] text-slate-600 mt-2 text-center italic">*Assuming wins at Avg R:R to
+                                recover lost capital.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="tab-average" class="hidden space-y-6">
+
+        <div id="tab-institutional" class="hidden space-y-6">
             <div class="bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-700 shadow-xl">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
-                    <div class="p-2 bg-emerald-500/10 rounded-lg">
-                        <i data-lucide="layers" class="text-emerald-500 w-6 h-6"></i>
+                    <div class="p-2 bg-indigo-500/10 rounded-lg">
+                        <i data-lucide="shield-check" class="text-indigo-500 w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-semibold text-white">Average Price Calculator</h2>
-                        <p class="text-slate-400 text-sm">Calculate weighted average price for 2 entries.</p>
+                        <h2 class="text-lg font-semibold text-white">Institutional Risk Manager</h2>
+                        <p class="text-slate-400 text-sm">3-Entry downside averaging & Monthly performance projection.
+                        </p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-6">
-                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700 relative">
-                            <span class="absolute -top-2.5 left-3 bg-slate-800 text-xs text-emerald-400 px-2 border border-slate-700 rounded">First Entry (Original)</span>
-                            <div class="grid grid-cols-2 gap-4 mt-1">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <!-- Left Column: Inputs -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-700 space-y-3">
+                            <h3 class="text-indigo-400 font-semibold flex items-center gap-2 text-sm">
+                                <i data-lucide="wallet" class="w-4 h-4"></i> Capital Settings
+                            </h3>
+
+                            <!-- Trade Direction Toggle -->
+                            <div class="mb-3">
+                                <label class="block text-[10px] text-slate-500 mb-1 uppercase">Direction</label>
+                                <div class="flex bg-slate-700 rounded-lg p-0.5" oninput="calcInstRisk()">
+                                    <input type="radio" id="inst-trade-buy" name="inst-trade-type" value="buy"
+                                        class="hidden peer/buy" checked />
+                                    <label for="inst-trade-buy"
+                                        class="flex-1 text-center py-1 px-2 rounded-md cursor-pointer transition-colors text-white font-medium text-xs bg-slate-600 peer-checked/buy:bg-green-600">
+                                        Buy
+                                    </label>
+
+                                    <input type="radio" id="inst-trade-sell" name="inst-trade-type" value="sell"
+                                        class="hidden peer/sell" />
+                                    <label for="inst-trade-sell"
+                                        class="flex-1 text-center py-1 px-2 rounded-md cursor-pointer transition-colors text-white font-medium text-xs bg-slate-600 peer-checked/sell:bg-red-600">
+                                        Sell
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs text-slate-400 mb-1">Price</label>
-                                    <input type="number" id="avg-p1" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="100">
+                                    <label class="block text-xs text-slate-500 mb-1 caps">Total Capital (₹)</label>
+                                    <input type="number" id="inst-capital" oninput="calcInstRisk(); calcMonthlyReturn()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-mono"
+                                        placeholder="100000">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-slate-400 mb-1">Quantity</label>
-                                    <input type="number" id="avg-q1" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="100">
+                                    <label class="block text-xs text-slate-500 mb-1">Risk per Trade (%)</label>
+                                    <input type="number" id="inst-risk-pct" oninput="calcInstRisk()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-mono"
+                                        placeholder="1">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">Risk Amount (₹)</label>
+                                    <div id="inst-risk-amount"
+                                        class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2 text-red-400 font-mono text-sm">
+                                        ₹0</div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">Intraday Leverage (X)</label>
+                                    <input type="number" id="inst-leverage" oninput="calcInstRisk()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-mono"
+                                        placeholder="1" value="1">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700 relative">
-                            <span class="absolute -top-2.5 left-3 bg-slate-800 text-xs text-emerald-400 px-2 border border-slate-700 rounded">Second Entry</span>
-                            <div class="grid grid-cols-2 gap-4 mt-1">
-                                <div>
-                                    <label class="block text-xs text-slate-400 mb-1">Price</label>
-                                    <input type="number" id="avg-p2" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="90">
+                        <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-700 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-indigo-400 font-semibold flex items-center gap-2">
+                                    <i data-lucide="arrow-down-right" class="w-4 h-4"></i> Downside Entries
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button onclick="calcInstAvg()"
+                                        class="text-[10px] bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded transition-colors"
+                                        title="Quickly calculate Weighted Average and Total Quantity only">
+                                        Avg
+                                    </button>
+                                    <button onclick="autoCalcInstQty()"
+                                        class="text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded transition-colors"
+                                        title="Auto-calculate quantities to match Risk Amount">
+                                        Auto
+                                    </button>
                                 </div>
-                                <div>
-                                    <label class="block text-xs text-slate-400 mb-1">Quantity</label>
-                                    <input type="number" id="avg-q2" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white focus:border-emerald-500 outline-none" placeholder="100">
+                            </div>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-[55px_1fr_max-content_max-content] items-center gap-1.5">
+                                    <span class="text-xs text-slate-500 font-medium whitespace-nowrap">Entry 1</span>
+                                    <input type="number" id="inst-e1" oninput="calcInstRisk('e1')"
+                                        class="bg-slate-800/80 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 font-mono text-xs w-full"
+                                        placeholder="Price">
+                                    <select id="inst-w1" onchange="calcInstRisk('w1')"
+                                        class="bg-slate-900 border border-slate-700 rounded-lg px-1.5 py-2 text-[10px] text-slate-300 outline-none w-14">
+                                        <option value="0.333" selected>Equal</option>
+                                        <option value="0.2">20%</option>
+                                        <option value="0.5">50%</option>
+                                        <option value="1">100%</option>
+                                    </select>
+                                    <input type="number" id="inst-q1" oninput="calcInstRisk('q1')"
+                                        class="w-12 bg-slate-900/50 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-indigo-400 font-mono text-right outline-none focus:ring-1 focus:ring-indigo-500 hover:bg-slate-900 transition-colors"
+                                        placeholder="0">
+                                </div>
+                                <div class="grid grid-cols-[55px_1fr_max-content_max-content] items-center gap-1.5">
+                                    <span class="text-xs text-slate-500 font-medium whitespace-nowrap">Entry 2</span>
+                                    <input type="number" id="inst-e2" oninput="calcInstRisk('e2')"
+                                        class="bg-slate-800/80 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 font-mono text-xs w-full"
+                                        placeholder="Price">
+                                    <select id="inst-w2" onchange="calcInstRisk('w2')"
+                                        class="bg-slate-900 border border-slate-700 rounded-lg px-1.5 py-2 text-[10px] text-slate-300 outline-none w-14">
+                                        <option value="0.333" selected>Equal</option>
+                                        <option value="0.2">20%</option>
+                                        <option value="0.5">50%</option>
+                                    </select>
+                                    <input type="number" id="inst-q2" oninput="calcInstRisk('q2')"
+                                        class="w-12 bg-slate-900/50 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-indigo-400 font-mono text-right outline-none focus:ring-1 focus:ring-indigo-500 hover:bg-slate-900 transition-colors"
+                                        placeholder="0">
+                                </div>
+                                <div class="grid grid-cols-[55px_1fr_max-content_max-content] items-center gap-1.5">
+                                    <span class="text-xs text-slate-500 font-medium whitespace-nowrap">Entry 3</span>
+                                    <input type="number" id="inst-e3" oninput="calcInstRisk('e3')"
+                                        class="bg-slate-800/80 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 font-mono text-xs w-full"
+                                        placeholder="Price">
+                                    <select id="inst-w3" onchange="calcInstRisk('w3')"
+                                        class="bg-slate-900 border border-slate-700 rounded-lg px-1.5 py-2 text-[10px] text-slate-300 outline-none w-14">
+                                        <option value="0.334" selected>Equal</option>
+                                        <option value="0.2">20%</option>
+                                        <option value="0.5">50%</option>
+                                    </select>
+                                    <input type="number" id="inst-q3" oninput="calcInstRisk('q3')"
+                                        class="w-12 bg-slate-900/50 border border-slate-700 rounded px-1.5 py-1 text-[10px] text-indigo-400 font-mono text-right outline-none focus:ring-1 focus:ring-indigo-500 hover:bg-slate-900 transition-colors"
+                                        placeholder="0">
                                 </div>
                             </div>
                         </div>
 
-                        <button onclick="calcAverage()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-lg transition-all shadow-lg shadow-emerald-500/20">
-                            Calculate Average
-                        </button>
+                        <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-700 space-y-4">
+                            <h3 class="text-indigo-400 font-semibold flex items-center gap-2">
+                                <i data-lucide="crosshair" class="w-4 h-4"></i> Strategy Exit
+                            </h3>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Stop Loss</label>
+                                    <input type="number" id="inst-sl" oninput="calcInstRisk()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-red-500 font-mono text-xs"
+                                        placeholder="Price">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">CMP</label>
+                                    <input type="number" id="inst-cmp" oninput="calcInstRisk()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500 font-mono text-xs"
+                                        placeholder="Price">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Target</label>
+                                    <input type="number" id="inst-target" oninput="calcInstRisk('target')"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-green-500 font-mono text-xs"
+                                        placeholder="Price">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Desired RR</label>
+                                    <input type="number" id="inst-desired-rr" oninput="calcInstRisk('desired-rr')"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-white outline-none focus:ring-1 focus:ring-indigo-500 font-mono text-xs"
+                                        placeholder="2" value="2">
+                                </div>
+                            </div>
+
+                            <!-- New metrics section -->
+                            <div
+                                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 pt-2 border-t border-slate-700">
+                                <div class="text-center">
+                                    <p class="text-[9px] text-slate-500 uppercase mb-1">Risk/Share</p>
+                                    <p id="inst-risk-per-share" class="text-xs font-bold text-red-400">₹0.00</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[9px] text-slate-500 uppercase mb-1">Reward/Share</p>
+                                    <p id="inst-reward-per-share" class="text-xs font-bold text-green-400">₹0.00</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[9px] text-slate-500 uppercase mb-1">No.</p>
+                                    <p id="inst-share-amount" class="text-xs font-bold text-white">0</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[9px] text-slate-500 uppercase mb-1">SL % CMP</p>
+                                    <p id="inst-sl-dist-pct" class="text-xs font-bold text-red-400">0.00%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[9px] text-slate-500 uppercase mb-1">TGT % CMP</p>
+                                    <p id="inst-target-dist-pct" class="text-xs font-bold text-green-400">0.00%</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col justify-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 p-4 sm:p-6 text-center">
-                        <h3 class="text-slate-400 text-sm uppercase tracking-wider mb-2">New Weighted Average Price</h3>
-                        <div class="flex items-baseline justify-center gap-1 mb-6">
-                            <span class="text-lg text-slate-400">₹</span>
-                            <span id="avg-result-price" class="text-4xl font-bold text-white">0.00</span>
+                    <!-- Right Column: Results & Pro Stats -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- Ladder & Averaging Stats -->
+                        <div
+                            class="bg-indigo-900/10 rounded-xl border border-indigo-500/20 p-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10">
+                                <i data-lucide="trending-up" class="w-24 h-24 text-indigo-500"></i>
+                            </div>
+
+                            <h3 class="text-indigo-300 font-bold text-sm uppercase tracking-widest mb-4">Position
+                                Summary</h3>
+
+                            <div class="grid grid-cols-2 gap-8 mb-6">
+                                <div>
+                                    <p class="text-xs text-slate-500 mb-1">Weighted Avg. Entry</p>
+                                    <p class="text-2xl font-bold text-white flex items-center gap-1">
+                                        <span class="text-sm text-indigo-400 italic">₹</span><span
+                                            id="inst-res-avg-entry">0.00</span>
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-slate-500 mb-1">Total Quantity</p>
+                                    <p id="inst-res-total-qty" class="text-2xl font-bold text-white">0</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-slate-400 flex items-center gap-1">
+                                            Total Capital At Risk
+                                            <i id="inst-risk-warning" data-lucide="alert-triangle"
+                                                class="w-5 h-5 text-yellow-500 hidden"></i>
+                                        </span>
+                                        <span id="inst-res-total-risk" class="font-semibold text-red-400">₹0</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-slate-400">Margin Required</span>
+                                        <span id="inst-res-margin" class="font-semibold text-blue-400">₹0</span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-slate-400">Risk-Reward Ratio</span>
+                                        <span id="inst-res-rr"
+                                            class="px-3 py-1 bg-indigo-500 text-white rounded-full text-xs font-bold transition-all">1
+                                            : 0.00</span>
+                                    </div>
+                                    <div class="relative h-2 bg-slate-700 rounded-full overflow-hidden w-full mt-1">
+                                        <div id="inst-risk-bar"
+                                            class="absolute left-0 top-0 h-full bg-red-500 transition-all duration-500"
+                                            style="width: 50%"></div>
+                                        <div id="inst-reward-bar"
+                                            class="absolute right-0 top-0 h-full bg-green-500 transition-all duration-500"
+                                            style="width: 50%"></div>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-slate-400">Actual Risk (%)</span>
+                                        <span id="inst-res-risk-pct-out" class="font-semibold text-red-400">0%</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="space-y-1">
+                                        <p class="text-slate-400">Target Profit (Potential)</p>
+                                        <div class="flex gap-4">
+                                            <span class="text-[10px] text-slate-500 uppercase">On Margin: <span
+                                                    id="inst-res-profit-pct-margin"
+                                                    class="text-green-400 font-bold">0%</span></span>
+                                            <span class="text-[10px] text-slate-500 uppercase">On Capital: <span
+                                                    id="inst-res-profit-pct-capital"
+                                                    class="text-green-400 font-bold">0%</span></span>
+                                        </div>
+                                    </div>
+                                    <span id="inst-res-profit" class="font-semibold text-green-400">₹0</span>
+                                </div>
+                            </div>
+
+                            <!-- Visual Ladder (Interactive) -->
+                            <div id="ladder-container"
+                                class="mt-12 relative h-16 flex items-center select-none cursor-crosshair">
+                                <div class="absolute inset-x-0 h-1 bg-slate-700/50 rounded-full"></div>
+
+                                <!-- Stop Loss Dot -->
+                                <div id="ladder-sl" class="absolute h-full flex flex-col items-center group touch-none"
+                                    style="left: 0%">
+                                    <span
+                                        class="text-[9px] text-red-500 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-sl">₹0</span>
+                                    <div class="w-4 h-4 bg-red-500 rounded-full border-2 border-slate-900 shadow-lg cursor-ew-resize active:scale-125 transition-transform"
+                                        title="Stop Loss (Drag to Adjust)"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">SL</span>
+                                </div>
+
+                                <!-- Entry Dots -->
+                                <div id="ladder-e3" class="absolute h-full flex flex-col items-center group touch-none"
+                                    style="left: 30%">
+                                    <span
+                                        class="text-[9px] text-indigo-400 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-e3">₹0</span>
+                                    <div class="w-3.5 h-3.5 bg-indigo-400 rounded-full border-2 border-slate-900 shadow-lg cursor-ew-resize active:scale-125 transition-transform"
+                                        title="Entry 3 (Drag to Adjust)"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">E3</span>
+                                </div>
+                                <div id="ladder-e2" class="absolute h-full flex flex-col items-center group touch-none"
+                                    style="left: 50%">
+                                    <span
+                                        class="text-[9px] text-indigo-500 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-e2">₹0</span>
+                                    <div class="w-3.5 h-3.5 bg-indigo-500 rounded-full border-2 border-slate-900 shadow-lg cursor-ew-resize active:scale-125 transition-transform"
+                                        title="Entry 2 (Drag to Adjust)"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">E2</span>
+                                </div>
+                                <div id="ladder-e1" class="absolute h-full flex flex-col items-center group touch-none"
+                                    style="left: 70%">
+                                    <span
+                                        class="text-[9px] text-indigo-600 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-e1">₹0</span>
+                                    <div class="w-4 h-4 bg-indigo-600 rounded-full border-2 border-slate-900 shadow-lg cursor-ew-resize active:scale-125 transition-transform"
+                                        title="Entry 1 (Drag to Adjust)"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">E1</span>
+                                </div>
+
+                                <!-- Target Dot -->
+                                <div id="ladder-target"
+                                    class="absolute h-full flex flex-col items-center group touch-none"
+                                    style="left: 100%">
+                                    <span
+                                        class="text-[9px] text-green-500 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-target">₹0</span>
+                                    <div class="w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 shadow-lg cursor-ew-resize active:scale-125 transition-transform"
+                                        title="Target (Drag to Adjust)"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">TARGET</span>
+                                </div>
+
+                                <!-- Break-even Marker (BE) -->
+                                <div id="ladder-be"
+                                    class="absolute h-full flex flex-col items-center group pointer-events-none z-10"
+                                    style="left: 50%">
+                                    <span
+                                        class="text-[9px] text-yellow-400 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-be">₹0</span>
+                                    <div class="w-3 h-3 bg-yellow-400 rounded-full border-2 border-slate-900 shadow-lg"
+                                        title="Break-even (Avg Entry)"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">BE</span>
+                                </div>
+
+                                <!-- Current Price Marker (CMP) -->
+                                <div id="ladder-cmp"
+                                    class="absolute h-full flex flex-col items-center group pointer-events-none z-20"
+                                    style="left: 0%">
+                                    <span
+                                        class="text-[9px] text-blue-400 font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                        id="lbl-cmp">₹0</span>
+                                    <div class="w-3.5 h-3.5 bg-blue-500 rounded-full border-2 border-slate-900 shadow-lg animate-pulse"
+                                        title="Current Price"></div>
+                                    <span class="text-[8px] text-slate-500 mt-1">CMP</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 border-t border-slate-700 pt-4">
-                            <div>
-                                <p class="text-xs text-slate-500">Total Quantity</p>
-                                <p id="avg-result-qty" class="text-lg font-semibold text-slate-200">0</p>
+                        <!-- Monthly Return Section -->
+                        <div class="bg-slate-900/60 rounded-xl border border-slate-700/50 p-6">
+                            <h3 class="text-indigo-400 font-semibold flex items-center gap-2 mb-4">
+                                <i data-lucide="calendar" class="w-5 h-5 text-emerald-400"></i> Monthly Return
+                                Calculator (Pro)
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Win Rate %</label>
+                                    <input type="number" id="inst-win-rate" value="50" oninput="calcMonthlyReturn()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Trades / Mo</label>
+                                    <input type="number" id="inst-trade-count" value="20" oninput="calcMonthlyReturn()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Avg. RR</label>
+                                    <input type="number" id="inst-avg-rr" value="2.5" oninput="calcMonthlyReturn()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 mb-1 uppercase">Risk % /
+                                        Trade</label>
+                                    <input type="number" id="inst-risk-per-trade" value="1"
+                                        oninput="calcMonthlyReturn()"
+                                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs text-slate-500">Total Invested</p>
-                                <p id="avg-result-invested" class="text-lg font-semibold text-slate-200">₹0</p>
+
+                            <div
+                                class="flex items-center gap-6 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                                <div class="flex-1">
+                                    <p class="text-xs text-emerald-500/70 font-medium uppercase">Expected Monthly Return
+                                    </p>
+                                    <p id="inst-res-mo-ret-pct" class="text-3xl font-black text-emerald-400">0.00%</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-emerald-500/70 font-medium uppercase">Profit Potential</p>
+                                    <p id="inst-res-mo-ret-amt" class="text-xl font-bold text-white">₹0</p>
+                                </div>
                             </div>
                         </div>
-                        <div id="avg-breakeven" class="mt-4 text-sm font-medium text-slate-300">
-                            </div>
                     </div>
                 </div>
             </div>
@@ -318,292 +644,829 @@
 
         // Tab Switching Logic
         function showTab(tabName) {
-            const tabIds = ['tab-analyzer', 'tab-average'];
-            const buttonIds = ['btn-analyzer', 'btn-average'];
+            const tabIds = ['tab-institutional', 'tab-simulator'];
+            const buttonIds = ['btn-institutional', 'btn-simulator'];
 
-            tabIds.forEach(id => document.getElementById(id).classList.add('hidden'));
+            tabIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
 
             buttonIds.forEach(btnId => {
                 const btn = document.getElementById(btnId);
-                btn.classList.remove('bg-blue-600', 'text-white', 'bg-slate-700');
-                btn.classList.add('text-slate-400');
+                if (btn) {
+                    btn.classList.remove('bg-red-600', 'text-white', 'bg-indigo-600');
+                    btn.classList.add('text-slate-400');
+                }
             });
 
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
             const activeBtn = document.getElementById(`btn-${tabName}`);
-            activeBtn.classList.remove('text-slate-400');
-            if(tabName === 'analyzer') {
-                 activeBtn.classList.add('bg-blue-600', 'text-white');
-            } else {
-                 activeBtn.classList.add('bg-slate-700', 'text-white');
-            }
-            
-            // Re-apply correct toggle styles on tab switch
-            if (tabName === 'analyzer') {
-                updateTradeToggleStyle();
-            }
-        }
-        
-        // Function to update the visual style of the Buy/Sell toggle
-        function updateTradeToggleStyle() {
-            const buyLabel = document.querySelector('label[for="trade-buy"]');
-            const sellLabel = document.querySelector('label[for="trade-sell"]');
-            const isBuySelected = document.getElementById('trade-buy').checked;
-
-            if (isBuySelected) {
-                buyLabel.classList.add('bg-blue-600', 'text-white');
-                buyLabel.classList.remove('bg-slate-600', 'text-slate-300');
-                sellLabel.classList.remove('bg-blue-600', 'text-white');
-                sellLabel.classList.add('bg-slate-700', 'text-slate-300');
-            } else {
-                sellLabel.classList.add('bg-blue-600', 'text-white');
-                sellLabel.classList.remove('bg-slate-600', 'text-slate-300');
-                buyLabel.classList.remove('bg-blue-600', 'text-white');
-                buyLabel.classList.add('bg-slate-700', 'text-slate-300');
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                if (tabName === 'simulator') activeBtn.classList.add('bg-red-600', 'text-white');
+                else activeBtn.classList.add('bg-indigo-600', 'text-white');
             }
         }
 
 
-        // Initialize the first tab as active
+
         window.onload = () => {
-             lucide.createIcons();
-             showTab('analyzer');
-             // Initial run of the analyzer on load (to clear defaults)
-             calcTradeAnalyzer();
+            lucide.createIcons();
+            showTab('institutional');
+            // Initial run of the calculations on load
+            calcInstRisk();
+            calcMonthlyReturn();
+            initSurvivalChart();
+            calcSurvival();
         }
 
         // Helper for formatting currency (Indian Rupees)
         function formatCurrency(amount) {
-            // Handle negative zero issue and use Indian locale for formatting
             if (amount === 0) return '₹0.00';
             const sign = amount < 0 ? '-' : '';
             const absAmount = Math.abs(amount);
-            return sign + '₹' + absAmount.toLocaleString('en-IN', {maximumFractionDigits: 2, minimumFractionDigits: 2});
+            return sign + '₹' + absAmount.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
         }
-        
+
         // Helper for formatting percentage
         function formatPercent(amount) {
             return amount.toFixed(2) + '%';
         }
 
 
-        // 1. COMBINED TRADE ANALYZER (Position Size + R:R + P&L + Leverage)
-        // This function runs automatically on every input change (oninput)
-        function calcTradeAnalyzer() {
-            // Update toggle style immediately on input change (required for radio button group)
-            updateTradeToggleStyle();
 
-            const capital = parseFloat(document.getElementById('pos-capital').value) || 0;
-            const riskPercent = parseFloat(document.getElementById('pos-risk-percent').value) || 0;
-            const entry = parseFloat(document.getElementById('pos-entry').value) || 0;
-            const sl = parseFloat(document.getElementById('pos-sl').value) || 0;
-            const target = parseFloat(document.getElementById('pos-target').value) || 0;
-            const leverage = parseFloat(document.getElementById('intraday-leverage').value) || 1;
-            const tradeType = document.querySelector('input[name="trade-type"]:checked').value;
+        // Helper to strictly calculate quantities within Risk Amount
+        function calculateSafeQuantities(totalRiskAmt, entries, sl, weights) {
+            if (totalRiskAmt <= 0) return [0, 0, 0];
 
+            let riskPerShares = entries.map(price => (price > 0 && sl > 0) ? Math.abs(price - sl) : 0);
 
-            // --- Reset Results if inputs are incomplete/invalid for the core calculation ---
-            if (capital <= 0 || riskPercent <= 0 || entry <= 0 || sl <= 0 || target <= 0 || entry === sl || leverage < 1) {
-                 // Reset P&L Results (All three)
-                document.getElementById('res-target-profit-amt').innerText = formatCurrency(0);
-                document.getElementById('res-target-profit-pct-required').innerText = formatPercent(0);
-                document.getElementById('res-target-profit-pct-total').innerText = formatPercent(0);
-                
-                 // Reset Position Sizing results
-                document.getElementById('res-qty').innerText = 0;
-                document.getElementById('res-capital-req').innerText = formatCurrency(0);
-                document.getElementById('res-risk-percent-out').innerText = `0%`;
-                document.getElementById('res-risk-amt').innerText = formatCurrency(0);
-                
+            // Initial allocation based on target weights
+            let quantities = riskPerShares.map((rps, idx) => {
+                if (rps === 0) return 0;
+                return Math.floor((totalRiskAmt * weights[idx]) / rps);
+            });
 
-                // Reset R:R results
-                document.getElementById('rr-risk-val').innerText = '0.00';
-                document.getElementById('rr-reward-val').innerText = '0.00';
-                document.getElementById('rr-ratio-val').innerText = '1 : 0';
-                document.getElementById('risk-bar').style.width = '50%';
-                document.getElementById('reward-bar').style.width = '50%';
-                
-                const verdictEl = document.getElementById('rr-verdict');
-                verdictEl.innerText = `Enter all trade values to see analysis`;
-                verdictEl.className = "mt-4 text-center py-2 rounded bg-slate-800 text-sm font-medium text-slate-300";
+            let currentTotalRisk = quantities.reduce((sum, q, idx) => sum + (q * riskPerShares[idx]), 0);
 
-                // Reset dynamic colors to neutral
-                const PnL_elements = ['res-target-profit-amt', 'res-target-profit-pct-required', 'res-target-profit-pct-total'];
-                PnL_elements.forEach(id => {
+            // Optimization loop: Fill remaining risk up to entry-specific target risk
+            for (let i = 0; i < 100; i++) {
+                let added = false;
+                for (let idx = 0; idx < entries.length; idx++) {
+                    const rps = riskPerShares[idx];
+                    if (rps > 0) {
+                        const targetRiskForEntry = totalRiskAmt * weights[idx];
+                        const currentRiskForEntry = quantities[idx] * rps;
+
+                        // Strict respect for both total limit and individual target weight
+                        if (currentTotalRisk + rps <= totalRiskAmt + 0.01 && currentRiskForEntry + rps <= targetRiskForEntry + 0.1) {
+                            quantities[idx]++;
+                            currentTotalRisk += rps;
+                            added = true;
+                        }
+                    }
+                }
+                if (!added) break;
+            }
+
+            // Safety Valve
+            while (currentTotalRisk > totalRiskAmt + 0.05) {
+                let reduced = false;
+                for (let idx = 0; idx < entries.length; idx++) {
+                    if (quantities[idx] > 0) {
+                        quantities[idx]--;
+                        currentTotalRisk -= riskPerShares[idx];
+                        reduced = true;
+                        if (currentTotalRisk <= totalRiskAmt) break;
+                    }
+                }
+                if (!reduced) break;
+            }
+            return quantities;
+        }
+
+        // 3. Institutional Risk Manager Logic (3-Entry Averaging)
+        function calcInstRisk(source) {
+            const capital = parseFloat(document.getElementById('inst-capital').value) || 0;
+            const riskPct = parseFloat(document.getElementById('inst-risk-pct').value) || 0;
+            const totalRiskAmt = (capital * riskPct) / 100;
+            const leverage = parseFloat(document.getElementById('inst-leverage').value) || 1;
+
+            const e1 = parseFloat(document.getElementById('inst-e1').value) || 0;
+            const e2 = parseFloat(document.getElementById('inst-e2').value) || 0;
+            const e3 = parseFloat(document.getElementById('inst-e3').value) || 0;
+            const sl = parseFloat(document.getElementById('inst-sl').value) || 0;
+            let target = parseFloat(document.getElementById('inst-target').value) || 0;
+            let desiredRR = parseFloat(document.getElementById('inst-desired-rr').value) || 2;
+
+            const w1Val = parseFloat(document.getElementById('inst-w1').value) || 0.333;
+            const w2Val = parseFloat(document.getElementById('inst-w2').value) || 0.333;
+            const w3Val = parseFloat(document.getElementById('inst-w3').value) || 0.334;
+
+            // Update Risk Amount display
+            if (capital > 0 && riskPct > 0) {
+                document.getElementById('inst-risk-amount').innerText = formatCurrency(totalRiskAmt);
+            } else {
+                document.getElementById('inst-risk-amount').innerText = formatCurrency(0);
+            }
+
+            const hasEntry = e1 > 0 || e2 > 0 || e3 > 0;
+            if (capital <= 0 || riskPct <= 0 || !hasEntry || sl <= 0) {
+                ["inst-res-avg-entry", "inst-res-total-qty", "inst-res-rr"].forEach(id => {
                     const el = document.getElementById(id);
-                    el.classList.remove('text-green-400', 'text-red-400');
-                    el.classList.add('text-white');
+                    if (el) el.innerText = id === "inst-res-rr" ? "1 : 0.00" : "0";
                 });
+                document.getElementById('inst-res-total-risk').innerText = "₹0";
+                document.getElementById('inst-res-profit').innerText = "₹0";
+                document.getElementById('inst-res-margin').innerText = "₹0";
+                document.getElementById('inst-res-risk-pct-out').innerText = "0%";
+                document.getElementById('inst-risk-per-share').innerText = '₹0.00';
+                document.getElementById('inst-reward-per-share').innerText = '₹0.00';
+                document.getElementById('inst-share-amount').innerText = '0';
+                document.getElementById('inst-sl-dist-pct').innerText = '0.00%';
 
+                // Only clear if absolutely necessary (e.g. source is not a quantity input)
+                if (source === 'reset') {
+                    document.getElementById('inst-q1').value = "";
+                    document.getElementById('inst-q2').value = "";
+                    document.getElementById('inst-q3').value = "";
+                }
 
+                const noAvg = 0;
+                updateLadder(e1, e2, e3, sl, target, noAvg, 0);
                 return;
             }
-            
-            // --- POSITION SIZE & LEVERAGE LOGIC ---
 
-            // Max Loss Amount = (Total Capital * Risk %) / 100
-            const maxLossAmount = (capital * riskPercent) / 100;
-            // Risk Per Share = |Entry - SL|
-            const riskPerShare = Math.abs(entry - sl);
-            
-            // Quantity based on Risk Management
-            let quantity = Math.floor(maxLossAmount / riskPerShare);
+            const entries = [e1, e2, e3];
+            const rawWeights = [w1Val, w2Val, w3Val];
 
-            // Calculate the total value of the position
-            const totalPositionValue = quantity * entry;
-            
-            // Calculate Margin Required using Leverage
-            // Margin Required = Total Position Value / Leverage
-            let requiredMargin = totalPositionValue / leverage;
-            
-            // Safety Check: If calculated margin exceeds total capital, the quantity must be reduced.
-            if (requiredMargin > capital) {
-                // If margin exceeds capital, recalculate max allowed quantity based on max margin (which is total capital)
-                // Max Position Value = Capital * Leverage
-                const maxPositionValue = capital * leverage;
-                // New Quantity = Floor(Max Position Value / Entry Price)
-                quantity = Math.floor(maxPositionValue / entry);
-                requiredMargin = quantity * entry / leverage; // Recalculate margin based on the new, smaller quantity
-            }
-            
-            // Final Metrics
-            const finalCapitalRequired = requiredMargin; // This is the final margin used
-            const actualMaxLoss = quantity * riskPerShare;
-            const riskPctOfCapital = (actualMaxLoss / capital) * 100;
+            // Handle Weight Logic: "Equal" vs Fixed (20%, 50%, 100%)
+            // Flexible weights (Equal) are 0.333 or 0.334
+            const isFlexible = (w) => (w > 0.33 && w < 0.34);
 
-            // --- P&L LOGIC (Buy/Sell Adjusted) ---
-            
-            let profitPerShare = 0;
-            if (tradeType === 'buy') {
-                // Long: Profit = Target - Entry
-                profitPerShare = target - entry; 
-            } else {
-                // Short: Profit = Entry - Target
-                profitPerShare = entry - target; 
-            }
+            let activeIndices = [];
+            let fixedWeightSum = 0;
+            entries.forEach((p, i) => { if (p > 0) activeIndices.push(i); });
 
-            const targetProfitAmount = quantity * profitPerShare; // Total Profit/Loss Amount
-            
-            // 1. Profit/Loss % on Margin Used (Capital Required)
-            const targetProfitPercentRequired = (finalCapitalRequired > 0) ? (targetProfitAmount / finalCapitalRequired) * 100 : 0;
-            
-            // 2. Profit/Loss % on Total Account Capital (Portfolio impact)
-            const targetProfitPercentTotal = (capital > 0) ? (targetProfitAmount / capital) * 100 : 0;
+            activeIndices.forEach(i => {
+                if (!isFlexible(rawWeights[i])) fixedWeightSum += rawWeights[i];
+            });
 
+            let finalWeights = [0, 0, 0];
+            let flexibleCount = activeIndices.filter(i => isFlexible(rawWeights[i])).length;
+            let remainingRisk = Math.max(0, 1.0 - fixedWeightSum);
 
-            // Update Position Sizing UI
-            document.getElementById('res-qty').innerText = quantity.toLocaleString('en-IN');
-            document.getElementById('res-capital-req').innerText = formatCurrency(finalCapitalRequired);
-            document.getElementById('res-risk-percent-out').innerText = `${riskPctOfCapital.toFixed(2)}%`;
-            document.getElementById('res-risk-amt').innerText = formatCurrency(actualMaxLoss);
-            
-            // Update P&L UI 
-            document.getElementById('res-target-profit-amt').innerText = formatCurrency(targetProfitAmount);
-            document.getElementById('res-target-profit-pct-required').innerText = formatPercent(targetProfitPercentRequired);
-            document.getElementById('res-target-profit-pct-total').innerText = formatPercent(targetProfitPercentTotal);
-            
-            // Function to set color classes (re-defined locally for clarity)
-            function setPnlColor(element, amount) {
-                element.classList.remove('text-green-400', 'text-red-400', 'text-white');
-                if (amount > 0) {
-                    element.classList.add('text-green-400');
-                } else if (amount < 0) {
-                    element.classList.add('text-red-400');
+            activeIndices.forEach(i => {
+                if (isFlexible(rawWeights[i])) {
+                    finalWeights[i] = remainingRisk / flexibleCount;
                 } else {
-                    element.classList.add('text-white');
+                    finalWeights[i] = rawWeights[i];
+                }
+            });
+
+            // Normalize down if sum > 1.0
+            const totalTargetWeight = finalWeights.reduce((a, b) => a + b, 0);
+            if (totalTargetWeight > 1.001) {
+                finalWeights = finalWeights.map(w => w / totalTargetWeight);
+            }
+
+            let entryQtys = [0, 0, 0];
+
+            // Get selected trade direction from toggle
+            const tradeDirection = document.querySelector('input[name="inst-trade-type"]:checked').value;
+            const isLong = tradeDirection === 'buy';
+
+            // Validate entries vs SL
+            let hasInvalidEntry = false;
+            let invalidEntryNumbers = [];
+            entries.forEach((price, idx) => {
+                if (price > 0 && sl > 0) {
+                    if ((isLong && price <= sl) || (!isLong && price >= sl)) {
+                        hasInvalidEntry = true;
+                        invalidEntryNumbers.push(idx + 1);
+                    }
+                }
+            });
+
+            if (hasInvalidEntry) {
+                const direction = isLong ? "LONG" : "SHORT";
+                const requirement = isLong ? "above (>)" : "below (<)";
+                console.error(`Invalid ${direction} position: Entry ${invalidEntryNumbers.join(', ')} must be ${requirement} Stop Loss (${sl})`);
+                // ... Reset displays
+                document.getElementById('inst-res-avg-entry').innerText = "0.00";
+                document.getElementById('inst-res-total-qty').innerText = "0";
+
+                // Still update ladder so dots are visible and draggable
+                updateLadder(e1, e2, e3, sl, target, 0, 0);
+                return;
+            }
+
+            // --- QUANTITY CALCULATION LOGIC ---
+            if (source && source.startsWith('q')) {
+                // MANUAL Mode
+                entryQtys[0] = parseFloat(document.getElementById('inst-q1').value) || 0;
+                entryQtys[1] = parseFloat(document.getElementById('inst-q2').value) || 0;
+                entryQtys[2] = parseFloat(document.getElementById('inst-q3').value) || 0;
+            } else {
+                // AUTO Mode: Use the finalWeights (intelligent distribution)
+                entryQtys = calculateSafeQuantities(totalRiskAmt, entries, sl, finalWeights);
+
+                document.getElementById('inst-q1').value = e1 > 0 ? entryQtys[0] : (hasEntry ? "0" : "");
+                document.getElementById('inst-q2').value = e2 > 0 ? entryQtys[1] : (hasEntry ? "0" : "");
+                document.getElementById('inst-q3').value = e3 > 0 ? entryQtys[2] : (hasEntry ? "0" : "");
+            }
+
+            // --- Metrics Calculation ---
+            let totalQty = 0, totalCost = 0, actualRiskAmt = 0;
+            entries.forEach((price, idx) => {
+                const q = entryQtys[idx];
+                if (price > 0 && q > 0) {
+                    const riskPerShare = Math.abs(price - sl);
+                    totalQty += q;
+                    totalCost += (q * price);
+                    actualRiskAmt += (q * riskPerShare);
+                }
+            });
+
+            if (totalQty === 0) {
+                // Even if q=0, we should clear results
+                document.getElementById('inst-res-avg-entry').innerText = "0.00";
+                document.getElementById('inst-res-total-qty').innerText = "0";
+                // ... etc
+                return;
+            }
+
+            const avgEntry = totalCost / totalQty;
+            const cmp = parseFloat(document.getElementById('inst-cmp').value) || 0;
+            const riskFromAvg = Math.abs(avgEntry - sl);
+
+            // Target / RR Synchronization
+            if (source === 'desired-rr' && desiredRR > 0 && riskFromAvg > 0) {
+                const isLong = avgEntry > sl;
+                target = isLong ? (avgEntry + (riskFromAvg * desiredRR)) : (avgEntry - (riskFromAvg * desiredRR));
+                document.getElementById('inst-target').value = target.toFixed(2);
+            } else if (riskFromAvg > 0) {
+                // Fix: Don't overwrite RR if we are just typing target
+                if (target > 0) {
+                    const rewardPerShare = Math.abs(target - avgEntry);
+                    desiredRR = rewardPerShare / riskFromAvg;
+                    // Only update display if not typing in it? "source" helps.
+                    if (source !== 'desired-rr') document.getElementById('inst-desired-rr').value = desiredRR.toFixed(2);
                 }
             }
 
-            setPnlColor(document.getElementById('res-target-profit-amt'), targetProfitAmount);
-            setPnlColor(document.getElementById('res-target-profit-pct-required'), targetProfitAmount); // Use P&L amount for Required % color
-            setPnlColor(document.getElementById('res-target-profit-pct-total'), targetProfitAmount); // Use P&L amount for Total % color
+            const rewardPerShare = Math.abs(target - avgEntry);
+            const rr = riskFromAvg > 0 ? (rewardPerShare / riskFromAvg) : 0;
+            const potentialProfit = totalQty * rewardPerShare;
+            const marginRequired = totalCost / leverage;
+            const actualRiskPct = (actualRiskAmt / capital) * 100;
 
+            const roiMargin = (potentialProfit / marginRequired) * 100 || 0;
+            const roiCapital = (potentialProfit / capital) * 100 || 0;
 
-            // --- RISK : REWARD LOGIC ---
-            
-            const risk = riskPerShare; // |Entry - SL|
-            const reward = Math.abs(targetProfitAmount / quantity); // |Target - Entry| or |Entry - Target|
-            const ratio = (reward / risk);
+            document.getElementById('inst-res-avg-entry').innerText = avgEntry.toFixed(2);
+            document.getElementById('inst-res-total-qty').innerText = totalQty.toLocaleString('en-IN');
+            const totalRiskEl = document.getElementById('inst-res-total-risk');
+            const warningEl = document.getElementById('inst-risk-warning');
 
-            // Update R:R Numbers
-            document.getElementById('rr-risk-val').innerText = risk.toFixed(2);
-            document.getElementById('rr-reward-val').innerText = reward.toFixed(2);
-            
-            const ratioDisplay = isFinite(ratio) ? `1 : ${ratio.toFixed(2)}` : "1 : 0";
-            document.getElementById('rr-ratio-val').innerText = ratioDisplay;
+            totalRiskEl.innerText = formatCurrency(actualRiskAmt);
+            const actualRiskPctEl = document.getElementById('inst-res-risk-pct-out');
 
-            // Visual Bar Logic
-            const total = risk + reward;
-            const riskPct = (risk / total) * 100;
-            const rewardPct = (reward / total) * 100;
-
-            document.getElementById('risk-bar').style.width = `${riskPct}%`;
-            document.getElementById('reward-bar').style.width = `${rewardPct}%`;
-
-            // Verdict
-            const verdictEl = document.getElementById('rr-verdict');
-            if (ratio >= 2) {
-                verdictEl.innerText = `Excellent Setup (R:R: 1:${ratio.toFixed(2)}). Exceeds 2:1.`;
-                verdictEl.className = "mt-4 text-center py-2 rounded bg-green-900/30 text-green-400 border border-green-900 text-sm font-medium";
-            } else if (ratio >= 1.5) {
-                verdictEl.innerText = `Good Setup (R:R: 1:${ratio.toFixed(2)}). Above 1.5:1.`;
-                verdictEl.className = "mt-4 text-center py-2 rounded bg-yellow-900/30 text-yellow-400 border border-yellow-900 text-sm font-medium";
-            } else if (ratio >= 1) {
-                verdictEl.innerText = `Minimum Acceptable (R:R: 1:${ratio.toFixed(2)}). At least 1:1.`;
-                verdictEl.className = "mt-4 text-center py-2 rounded bg-slate-700 text-slate-300 border border-slate-600 text-sm font-medium";
+            // Warning Logic (Visual Only - logic allows manual override)
+            if (actualRiskAmt > totalRiskAmt) {
+                warningEl.classList.remove('hidden');
+                warningEl.classList.add('animate-pulse');
+                actualRiskPctEl.classList.add('text-2xl', 'animate-pulse', 'text-red-500', 'font-bold');
+                actualRiskPctEl.classList.remove('text-red-400', 'font-semibold');
             } else {
-                verdictEl.innerText = `Poor Setup (R:R: 1:${ratio.toFixed(2)}). Risk is higher than reward.`;
-                verdictEl.className = "mt-4 text-center py-2 rounded bg-red-900/30 text-red-400 border border-red-900 text-sm font-medium";
+                warningEl.classList.add('hidden');
+                warningEl.classList.remove('animate-pulse');
+                actualRiskPctEl.classList.remove('text-2xl', 'animate-pulse', 'text-red-500', 'font-bold');
+                actualRiskPctEl.classList.add('text-red-400', 'font-semibold');
             }
+
+            // Re-apply static style
+            totalRiskEl.classList.remove('text-white');
+            totalRiskEl.classList.add('text-red-400');
+
+            document.getElementById('inst-res-rr').innerText = `1 : ${rr.toFixed(2)}`;
+            document.getElementById('inst-res-profit').innerText = formatCurrency(potentialProfit);
+            document.getElementById('inst-res-margin').innerText = formatCurrency(marginRequired);
+            actualRiskPctEl.innerText = actualRiskPct.toFixed(2) + "%";
+            document.getElementById('inst-res-profit-pct-margin').innerText = roiMargin.toFixed(2) + "%";
+            document.getElementById('inst-res-profit-pct-capital').innerText = roiCapital.toFixed(2) + "%";
+
+            document.getElementById('inst-risk-per-share').innerText = '₹' + riskFromAvg.toFixed(2);
+            document.getElementById('inst-reward-per-share').innerText = '₹' + rewardPerShare.toFixed(2);
+            document.getElementById('inst-share-amount').innerText = totalQty.toLocaleString('en-IN');
+
+            // CMP Pct
+            if (cmp > 0) {
+                const slDistPct = ((Math.abs(cmp - sl) / cmp) * 100);
+                const targetDistPct = ((Math.abs(target - cmp) / cmp) * 100);
+                document.getElementById('inst-sl-dist-pct').innerText = slDistPct.toFixed(2) + '%';
+                document.getElementById('inst-target-dist-pct').innerText = targetDistPct.toFixed(2) + '%';
+            } else {
+                document.getElementById('inst-sl-dist-pct').innerText = '0.00%';
+                document.getElementById('inst-target-dist-pct').innerText = '0.00%';
+            }
+
+            // RR Bar
+            const totalRR = riskFromAvg + rewardPerShare;
+            if (totalRR > 0) {
+                document.getElementById('inst-risk-bar').style.width = `${(riskFromAvg / totalRR) * 100}%`;
+                document.getElementById('inst-reward-bar').style.width = `${(rewardPerShare / totalRR) * 100}%`;
+            }
+
+            // RR Verdict
+            const rrEl = document.getElementById('inst-res-rr');
+            rrEl.classList.remove('bg-indigo-500', 'bg-green-600', 'bg-red-600', 'bg-yellow-600');
+            if (rr >= 2) rrEl.classList.add('bg-green-600');
+            else if (rr >= 1.5) rrEl.classList.add('bg-yellow-600');
+            else if (rr >= 1) rrEl.classList.add('bg-indigo-500');
+            else rrEl.classList.add('bg-red-600');
+
+            // Ladder Logic (simplified update)
+            updateLadder(e1, e2, e3, sl, target, avgEntry, cmp);
         }
 
-        // 2. Average Price Calculator (Unchanged Logic)
-        function calcAverage() {
-            const p1 = parseFloat(document.getElementById('avg-p1').value) || 0;
-            const q1 = parseFloat(document.getElementById('avg-q1').value) || 0;
-            const p2 = parseFloat(document.getElementById('avg-p2').value) || 0;
-            const q2 = parseFloat(document.getElementById('avg-q2').value) || 0;
+        // Extracted Ladder Update to keep calcInstRisk clean
+        function updateLadder(e1, e2, e3, sl, target, avgEntry, cmp) {
+            const pts = [e1, e2, e3, sl, target, avgEntry];
+            if (cmp > 0) pts.push(cmp);
+            const filteredPts = pts.filter(p => p > 0);
+            if (filteredPts.length === 0) return;
 
-            if (p1 <= 0 || q1 <= 0) {
-                return showModal("Please enter valid Price and Quantity for the first entry.");
+            const actualMin = Math.min(...filteredPts);
+            const actualMax = Math.max(...filteredPts);
+            const actualRange = actualMax - actualMin;
+            const padding = actualRange * 0.2 || (actualMin > 0 ? actualMin * 0.1 : 20);
+            const visMin = actualMin - padding;
+            const visMax = actualMax + padding;
+            const visRange = visMax - visMin;
+            const getPos = (p) => (p > 0 && visRange > 0) ? ((p - visMin) / visRange * 100) : 50;
+
+            document.getElementById('lbl-e1').innerText = e1 > 0 ? `₹${e1}` : '-';
+            document.getElementById('lbl-e2').innerText = e2 > 0 ? `₹${e2}` : '-';
+            document.getElementById('lbl-e3').innerText = e3 > 0 ? `₹${e3}` : '-';
+            document.getElementById('lbl-sl').innerText = sl > 0 ? `₹${sl}` : '-';
+            document.getElementById('lbl-target').innerText = target > 0 ? `₹${target}` : '-';
+            document.getElementById('lbl-be').innerText = avgEntry > 0 ? `₹${avgEntry.toFixed(2)}` : '-';
+            document.getElementById('lbl-cmp').innerText = cmp > 0 ? `₹${cmp}` : '-';
+
+            document.getElementById('ladder-sl').style.left = `${getPos(sl)}%`;
+            document.getElementById('ladder-target').style.left = `${getPos(target)}%`;
+            document.getElementById('ladder-be').style.left = `${getPos(avgEntry)}%`;
+            if (cmp > 0) {
+                const lCmp = document.getElementById('ladder-cmp');
+                lCmp.style.left = `${getPos(cmp)}%`;
+                lCmp.style.opacity = 1;
+            } else {
+                document.getElementById('ladder-cmp').style.opacity = 0;
             }
 
-            const totalQty = q1 + q2;
-            const totalInvested = (p1 * q1) + (p2 * q2);
-            
-            let avgPrice = 0;
+            if (e3 > 0) document.getElementById('ladder-e3').style.left = `${getPos(e3)}%`;
+            if (e2 > 0) document.getElementById('ladder-e2').style.left = `${getPos(e2)}%`;
+            if (e1 > 0) document.getElementById('ladder-e1').style.left = `${getPos(e1)}%`;
+
+            document.getElementById('ladder-e1').style.opacity = e1 > 0 ? 1 : 0;
+            document.getElementById('ladder-e2').style.opacity = e2 > 0 ? 1 : 0;
+            document.getElementById('ladder-e3').style.opacity = e3 > 0 ? 1 : 0;
+            document.getElementById('ladder-be').style.opacity = 1;
+
+            // Store current scale for dragging
+            window.ladderScale = { visMin, visRange };
+        }
+
+        // Implementation of dragging for Institutional Markers
+        function initInstitutionalDrag() {
+            const container = document.getElementById('ladder-container');
+            let activeMarker = null;
+
+            const markers = {
+                'ladder-sl': 'inst-sl',
+                'ladder-e1': 'inst-e1',
+                'ladder-e2': 'inst-e2',
+                'ladder-e3': 'inst-e3',
+                'ladder-target': 'inst-target'
+            };
+
+            const startDrag = (e, markerId) => {
+                activeMarker = markerId;
+                console.log('Drag started:', markerId);
+                document.body.style.cursor = 'ew-resize';
+                e.preventDefault();
+            };
+
+            Object.keys(markers).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('mousedown', (e) => startDrag(e, id));
+                    el.addEventListener('touchstart', (e) => startDrag(e, id), { passive: false });
+                }
+            });
+
+            const onMove = (e) => {
+                if (!activeMarker || !window.ladderScale) return;
+
+                const rect = container.getBoundingClientRect();
+                const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+
+                // Ensure we are using the correct relative coordinate
+                let pct = (clientX - rect.left) / rect.width;
+                pct = Math.max(0, Math.min(1, pct));
+
+                const { visMin, visRange } = window.ladderScale;
+                if (isNaN(visMin) || isNaN(visRange) || visRange <= 0) return;
+
+                const newPrice = visMin + (pct * visRange);
+                console.log('Moving:', activeMarker, 'pct:', pct.toFixed(2), 'price:', newPrice.toFixed(2));
+
+                const inputId = markers[activeMarker];
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = newPrice.toFixed(2);
+                    // Filter source for calcInstRisk
+                    let source = '';
+                    if (inputId === 'inst-sl') source = 'sl';
+                    else if (inputId === 'inst-target') source = 'target';
+                    else source = inputId.replace('inst-', '');
+
+                    calcInstRisk(source);
+                }
+            };
+
+            const stopDrag = () => {
+                if (activeMarker) {
+                    console.log('Drag stopped:', activeMarker);
+                    activeMarker = null;
+                    document.body.style.cursor = 'default';
+                }
+            };
+
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchend', stopDrag);
+        }
+
+        function autoCalcInstQty() {
+            // Helper wrapper for the button
+            calcInstRisk();
+        }
+
+        // New function for quick average price calculation without requiring SL
+        function calcInstAvg() {
+            const e1 = parseFloat(document.getElementById('inst-e1').value) || 0;
+            const e2 = parseFloat(document.getElementById('inst-e2').value) || 0;
+            const e3 = parseFloat(document.getElementById('inst-e3').value) || 0;
+            const q1 = parseFloat(document.getElementById('inst-q1').value) || 0;
+            const q2 = parseFloat(document.getElementById('inst-q2').value) || 0;
+            const q3 = parseFloat(document.getElementById('inst-q3').value) || 0;
+
+            const entries = [e1, e2, e3];
+            const qtys = [q1, q2, q3];
+
+            let totalQty = 0;
+            let totalCost = 0;
+
+            entries.forEach((price, idx) => {
+                const q = qtys[idx];
+                if (price > 0 && q > 0) {
+                    totalQty += q;
+                    totalCost += (q * price);
+                }
+            });
+
             if (totalQty > 0) {
-                avgPrice = totalInvested / totalQty;
-            }
+                const avgEntry = totalCost / totalQty;
+                document.getElementById('inst-res-avg-entry').innerText = avgEntry.toFixed(2);
+                document.getElementById('inst-res-total-qty').innerText = totalQty.toLocaleString('en-IN');
 
-            document.getElementById('avg-result-price').innerText = avgPrice.toFixed(2);
-            document.getElementById('avg-result-qty').innerText = totalQty.toLocaleString('en-IN');
-            document.getElementById('avg-result-invested').innerText = formatCurrency(totalInvested);
+                // Update margin if leverage is available
+                const leverage = parseFloat(document.getElementById('inst-leverage').value) || 1;
+                const marginRequired = totalCost / leverage;
+                document.getElementById('inst-res-margin').innerText = formatCurrency(marginRequired);
 
-            const breakevenEl = document.getElementById('avg-breakeven');
-            
-            if (p2 === 0 || q2 === 0) {
-                breakevenEl.innerHTML = `<p class="text-slate-500">Add a second entry to calculate the new average.</p>`;
-            } else {
-                const priceDifference = avgPrice - p1;
-                const percentChangeRequired = (priceDifference / p1) * 100;
-                
-                if (avgPrice < p1) {
-                    breakevenEl.innerHTML = `<p class="text-sm font-semibold mt-4 text-green-400">
-                        Averaging Down Success: Your break-even price is now <span class="font-bold">₹${avgPrice.toFixed(2)}</span>.
-                        The stock needs to move only <span class="font-bold">${Math.abs(percentChangeRequired).toFixed(2)}% up</span> to reach the original entry price (₹${p1.toFixed(2)}).
-                    </p>`;
-                } else if (avgPrice > p1) {
-                    breakevenEl.innerHTML = `<p class="text-sm font-semibold mt-4 text-red-400">
-                        Averaging Up: Your break-even price is now <span class="font-bold">₹${avgPrice.toFixed(2)}</span>.
-                        The price is now <span class="font-bold">${Math.abs(percentChangeRequired).toFixed(2)}% higher</span> than your first entry (₹${p1.toFixed(2)}).
-                    </p>`;
-                } else {
-                     breakevenEl.innerHTML = `<p class="text-slate-500">The average price remains ₹${avgPrice.toFixed(2)}. The second entry price was identical.</p>`;
+                // Update result fields
+                const riskPct = parseFloat(document.getElementById('inst-risk-pct').value) || 0;
+                const capital = parseFloat(document.getElementById('inst-capital').value) || 0;
+                const totalRiskAmt = (capital * riskPct) / 100;
+                const sl = parseFloat(document.getElementById('inst-sl').value) || 0;
+
+                let actualRiskAmt = 0;
+                if (sl > 0) {
+                    actualRiskAmt = Math.abs(avgEntry - sl) * totalQty;
+                    document.getElementById('inst-res-total-risk').innerText = formatCurrency(actualRiskAmt);
+                    document.getElementById('inst-res-risk-pct-out').innerText = ((actualRiskAmt / capital) * 100 || 0).toFixed(2) + "%";
                 }
+
+                // Try to update ladder
+                const target = parseFloat(document.getElementById('inst-target').value) || 0;
+                const cmp = parseFloat(document.getElementById('inst-cmp').value) || 0;
+                updateLadder(e1, e2, e3, sl, target, avgEntry, cmp);
             }
         }
+
+        function calcMonthlyReturn() {
+            const winRate = parseFloat(document.getElementById('inst-win-rate').value) || 0;
+            const trades = parseFloat(document.getElementById('inst-trade-count').value) || 0;
+            const rr = parseFloat(document.getElementById('inst-avg-rr').value) || 0;
+            const riskPerTrade = parseFloat(document.getElementById('inst-risk-per-trade').value) || 0;
+            const capital = parseFloat(document.getElementById('inst-capital').value) || 0;
+
+            const expectedReturnPerTrade = ((winRate / 100) * rr * riskPerTrade) - ((1 - winRate / 100) * riskPerTrade);
+            const monthlyReturnPct = trades * expectedReturnPerTrade;
+            const monthlyProfitAmt = (capital * monthlyReturnPct) / 100;
+
+            document.getElementById('inst-res-mo-ret-pct').innerText = monthlyReturnPct.toFixed(2) + "%";
+            document.getElementById('inst-res-mo-ret-amt').innerText = formatCurrency(monthlyProfitAmt);
+
+            const pctEl = document.getElementById('inst-res-mo-ret-pct');
+            pctEl.classList.remove('text-emerald-400', 'text-red-400', 'text-slate-400');
+            if (monthlyReturnPct > 0) pctEl.classList.add('text-emerald-400');
+            else if (monthlyReturnPct < 0) pctEl.classList.add('text-red-400');
+            else pctEl.classList.add('text-slate-400');
+        }
+
+        // 4. Survival & Recovery Simulator Logic
+        let survivalChart = null;
+
+        function initSurvivalChart() {
+            const ctx = document.getElementById('survivalChart').getContext('2d');
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = '#334155';
+
+            survivalChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Drawdown Phase',
+                            data: [],
+                            borderColor: '#fb7185', // red-400
+                            backgroundColor: 'rgba(251, 113, 133, 0.1)',
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        },
+                        {
+                            label: 'Recovery Phase',
+                            data: [],
+                            borderColor: '#4ade80', // green-400
+                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    interaction: {
+                        mode: 'nearest',
+                        intersect: false,
+                        axis: 'x'
+                    },
+                    plugins: {
+                        legend: { display: true, labels: { font: { size: 10 }, boxWidth: 10 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    // Handle {x, y} data structure
+                                    const value = context.parsed.y;
+                                    return context.dataset.label + ': ₹' + value.toLocaleString('en-IN');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#334155' },
+                            ticks: {
+                                callback: function (value) {
+                                    return '₹' + (value / 1000) + 'k';
+                                }
+                            }
+                        },
+                        x: {
+                            type: 'linear', // Set x-axis type to linear for numerical x values
+                            grid: { display: false },
+                            title: { display: true, text: 'Cumulative Trades' },
+                            ticks: { maxTicksLimit: 10 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calcSurvival() {
+            const capital = parseFloat(document.getElementById('sim-capital').value) || 0;
+            const thresholdPct = parseFloat(document.getElementById('sim-threshold-pct').value) || 0;
+            const riskMode = document.querySelector('input[name="risk-mode"]:checked').value;
+            const tradesPerDay = parseFloat(document.getElementById('sim-trades-per-day').value) || 1;
+            const avgRR = parseFloat(document.getElementById('sim-avg-rr').value) || 2;
+
+            // Toggle Input Visibility
+            if (riskMode === 'pct') {
+                document.getElementById('input-risk-pct-group').classList.remove('hidden');
+                document.getElementById('input-risk-amt-group').classList.add('hidden');
+            } else {
+                document.getElementById('input-risk-pct-group').classList.add('hidden');
+                document.getElementById('input-risk-amt-group').classList.remove('hidden');
+            }
+
+            if (capital <= 0) return;
+
+            let currentCap = capital;
+            const thresholdAmt = (capital * thresholdPct) / 100;
+            const survLabels = [0];
+            const survData = [capital];
+            let trades = 0;
+            const MAX_TRADES = 20000;
+
+            let riskVal = 0;
+            if (riskMode === 'pct') {
+                riskVal = parseFloat(document.getElementById('sim-risk-pct').value) || 0;
+            } else {
+                riskVal = parseFloat(document.getElementById('sim-risk-amt').value) || 0;
+            }
+
+            if (riskVal <= 0) {
+                updateChartData([{ x: 0, y: capital }], []);
+                return;
+            }
+
+            // --- SURVIVAL SIMULATION ---
+            while (currentCap > thresholdAmt && trades < MAX_TRADES) {
+                trades++;
+                let loss = 0;
+                if (riskMode === 'pct') {
+                    // Constant % of CURRENT capital (Compounding Loss / Zeno's Paradox)
+                    loss = (currentCap * riskVal) / 100;
+                } else {
+                    // Fixed Amount (Static Risk)
+                    loss = riskVal;
+                }
+                currentCap -= loss;
+
+                survLabels.push(trades);
+                survData.push(Math.round(currentCap));
+
+                if (currentCap <= 1) { // treat capital <= 1 as 0/ruin
+                    currentCap = 0;
+                    // Ensure the last point is exactly 0
+                    survData[survData.length - 1] = 0;
+                    break;
+                }
+            }
+
+            // Update Survival Results
+            const tradeText = trades >= MAX_TRADES && currentCap > 1 ? MAX_TRADES + "+" : trades;
+            document.getElementById('sim-res-trades').innerText = tradeText + " Trades";
+            document.getElementById('sim-res-capital').innerText = formatCurrency(currentCap);
+
+            const daysToRuin = trades / tradesPerDay;
+            document.getElementById('sim-res-days').innerText = `~${daysToRuin.toFixed(1)} Days (@ ${tradesPerDay}/day)`;
+
+
+            // --- RECOVERY SIMULATION ---
+            const recLabels = [];
+            const recData = [];
+            let recTrades = 0;
+            let tempRecCap = currentCap;
+            const MAX_REC_TRADES = 10000;
+            let tradesToRecoverDisplay = "N/A";
+
+            if (tempRecCap > 1) { // Can only recover if not ruined
+                // Start recovery from the last survival point
+                recLabels.push(trades);
+                recData.push(Math.round(tempRecCap));
+
+                let winAmt = 0;
+                while (tempRecCap < capital && recTrades < MAX_REC_TRADES) {
+                    recTrades++;
+
+                    let riskForTrade = 0;
+                    if (riskMode === 'pct') {
+                        riskForTrade = (tempRecCap * riskVal) / 100;
+                    } else {
+                        riskForTrade = riskVal;
+                    }
+
+                    winAmt = riskForTrade * avgRR;
+                    tempRecCap += winAmt;
+
+                    // Offset labels by survival trades count
+                    recLabels.push(trades + recTrades);
+                    recData.push(Math.round(tempRecCap));
+                }
+
+                if (tempRecCap >= capital) {
+                    tradesToRecoverDisplay = recTrades.toLocaleString('en-IN');
+                } else {
+                    tradesToRecoverDisplay = ">" + MAX_REC_TRADES.toLocaleString('en-IN');
+                }
+            }
+
+            // Update Recovery UI Stats
+            const lossAmount = capital - currentCap;
+            const drawdownPct = (lossAmount / capital) * 100;
+            let requiredGainPct = 0;
+            if (currentCap > 1) requiredGainPct = (lossAmount / currentCap) * 100;
+
+            document.getElementById('sim-rec-drawdown').innerText = drawdownPct.toFixed(2) + "%";
+
+            if (currentCap <= 1) {
+                document.getElementById('sim-rec-gain').innerText = "Ruined";
+                document.getElementById('sim-rec-gain').classList.add('text-slate-500');
+                document.getElementById('sim-rec-gain').classList.remove('text-orange-400');
+
+                document.getElementById('sim-rec-trades').innerText = "N/A";
+                document.getElementById('sim-rec-trades').classList.add('text-slate-500');
+                document.getElementById('sim-rec-trades').classList.remove('text-green-400');
+                document.getElementById('sim-rec-days').innerText = "Ruined";
+            } else {
+                document.getElementById('sim-rec-gain').innerText = requiredGainPct.toFixed(2) + "%";
+                document.getElementById('sim-rec-gain').classList.remove('text-slate-500');
+                document.getElementById('sim-rec-gain').classList.add('text-orange-400');
+
+                document.getElementById('sim-rec-trades').innerText = tradesToRecoverDisplay;
+                document.getElementById('sim-rec-trades').classList.remove('text-slate-500');
+                document.getElementById('sim-rec-trades').classList.add('text-green-400');
+
+                // Days calculation
+                let daysText = "";
+                if (tradesToRecoverDisplay.includes('>')) {
+                    daysText = `> ${(MAX_REC_TRADES / tradesPerDay).toFixed(1)} Days`;
+                } else {
+                    daysText = `~${(recTrades / tradesPerDay).toFixed(1)} Days`;
+                }
+                document.getElementById('sim-rec-days').innerText = daysText;
+            }
+
+            // Downsample both first
+            const dsSurv = downsampleData(survLabels, survData, 300);
+            const dsRec = downsampleData(recLabels, recData, 300);
+
+            const sPoints = dsSurv.labels.map((l, i) => ({ x: l, y: dsSurv.data[i] }));
+            const rPoints = dsRec.labels.map((l, i) => ({ x: l, y: dsRec.data[i] }));
+
+            updateChartData(sPoints, rPoints);
+        }
+
+        // Helper to reduce chart points for performance
+        function downsampleData(labels, data, targetCount) {
+            if (labels.length <= targetCount) return { labels, data };
+
+            const step = Math.ceil(labels.length / targetCount);
+            const newLabels = [];
+            const newData = [];
+
+            for (let i = 0; i < labels.length; i += step) {
+                newLabels.push(labels[i]);
+                newData.push(data[i]);
+            }
+            // Always include best/last point
+            if (newLabels[newLabels.length - 1] !== labels[labels.length - 1]) {
+                newLabels.push(labels[labels.length - 1]);
+                newData.push(data[data.length - 1]);
+            }
+            return { labels: newLabels, data: newData };
+        }
+
+        function updateChartData(survPoints, recPoints) {
+            if (!survivalChart) return;
+            // Clear labels as we use {x,y} structures now, but we need to ensure X axis is linear
+            survivalChart.data.labels = [];
+            survivalChart.data.datasets[0].data = survPoints;
+            survivalChart.data.datasets[1].data = recPoints;
+
+            // We need to ensure X axis is 'linear' type for {x,y} parsing.
+            if (survivalChart.options.scales.x.type !== 'linear') {
+                survivalChart.options.scales.x.type = 'linear';
+            }
+
+            survivalChart.update();
+        }
+
+        window.addEventListener('load', () => {
+            calcMonthlyReturn();
+            calcInstRisk();
+            initSurvivalChart();
+            calcSurvival();
+            initInstitutionalDrag();
+        });
     </script>
 </body>
+
 </html>
