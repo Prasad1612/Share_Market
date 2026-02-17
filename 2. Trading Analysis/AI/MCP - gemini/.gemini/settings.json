@@ -10,6 +10,15 @@
     "NseKit-MCP": {
       "command": "uvx",
       "args": ["nsekit-mcp@latest"]
+    },
+    "CNBC_News-MCP": {
+      "command": "mcp",
+      "args": [
+        "run",
+        "D:\\Prasad\\Trading\\01. Py\\MCP\\cnbctv18-mcp\\main.py"
+      ]
     }
   }
 }
+
+

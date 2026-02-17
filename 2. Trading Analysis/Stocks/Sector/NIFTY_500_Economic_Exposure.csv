@@ -1,0 +1,502 @@
+﻿MacroEconomicSector,Sector,Industry,BasicIndustry,Stock,SectorWeight%,StockWeight%,BasicIndustryWeight%
+Financial Services,Financial Services,Banks,Private Sector Bank,HDFCBANK,32.12,7.31,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,ICICIBANK,32.12,4.98,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,AXISBANK,32.12,2.02,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,KOTAKBANK,32.12,1.54,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,FEDERALBNK,32.12,0.36,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,INDUSINDBK,32.12,0.3,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,IDFCFIRSTB,32.12,0.28,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,YESBANK,32.12,0.19,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,KARURVYSYA,32.12,0.15,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,CUB,32.12,0.11,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,RBLBANK,32.12,0.09,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,BANDHANBNK,32.12,0.07,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,IDBI,32.12,0.03,17.45
+Financial Services,Financial Services,Banks,Private Sector Bank,J&KBANK,32.12,0.02,17.45
+Financial Services,Financial Services,Banks,Public Sector Bank,SBIN,32.12,2.3,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,BANKBARODA,32.12,0.29,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,CANBK,32.12,0.26,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,PNB,32.12,0.22,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,UNIONBANK,32.12,0.18,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,INDIANB,32.12,0.17,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,BANKINDIA,32.12,0.1,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,MAHABANK,32.12,0.07,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,IOB,32.12,0.03,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,CENTRALBK,32.12,0.02,3.66
+Financial Services,Financial Services,Banks,Public Sector Bank,UCOBANK,32.12,0.02,3.66
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),BAJFINANCE,32.12,1.27,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),SHRIRAMFIN,32.12,0.74,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),CHOLAFIN,32.12,0.36,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),MUTHOOTFIN,32.12,0.21,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),SUNDARMFIN,32.12,0.19,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),M&MFIN,32.12,0.13,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),LTF,32.12,0.12,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),SBICARD,32.12,0.12,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),MANAPPURAM,32.12,0.08,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),AIIL,32.12,0.07,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),IIFL,32.12,0.06,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),POONAWALLA,32.12,0.06,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),FIVESTAR,32.12,0.05,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),CGCL,32.12,0.03,3.5100000000000002
+Financial Services,Financial Services,Finance,Non Banking Financial Company (NBFC),SBFC,32.12,0.02,3.5100000000000002
+Financial Services,Financial Services,Insurance,Life Insurance,SBILIFE,32.12,0.46,1.3
+Financial Services,Financial Services,Insurance,Life Insurance,HDFCLIFE,32.12,0.4,1.3
+Financial Services,Financial Services,Insurance,Life Insurance,MFSL,32.12,0.22,1.3
+Financial Services,Financial Services,Insurance,Life Insurance,ICICIPRULI,32.12,0.13,1.3
+Financial Services,Financial Services,Insurance,Life Insurance,LICI,32.12,0.09,1.3
+Financial Services,Financial Services,Capital Markets,Exchange and Data Platform,BSE,32.12,0.59,0.97
+Financial Services,Financial Services,Capital Markets,Exchange and Data Platform,MCX,32.12,0.33,0.97
+Financial Services,Financial Services,Capital Markets,Exchange and Data Platform,IEX,32.12,0.05,0.97
+Financial Services,Financial Services,Finance,Holding Company,BAJAJFINSV,32.12,0.57,0.8699999999999999
+Financial Services,Financial Services,Finance,Holding Company,BAJAJHLDNG,32.12,0.24,0.8699999999999999
+Financial Services,Financial Services,Finance,Holding Company,CHOICEIN,32.12,0.03,0.8699999999999999
+Financial Services,Financial Services,Finance,Holding Company,JMFINANCIL,32.12,0.03,0.8699999999999999
+Financial Services,Financial Services,Finance,Financial Institution,PFC,32.12,0.28,0.74
+Financial Services,Financial Services,Finance,Financial Institution,RECLTD,32.12,0.23,0.74
+Financial Services,Financial Services,Finance,Financial Institution,IRFC,32.12,0.11,0.74
+Financial Services,Financial Services,Finance,Financial Institution,HUDCO,32.12,0.05,0.74
+Financial Services,Financial Services,Finance,Financial Institution,IREDA,32.12,0.05,0.74
+Financial Services,Financial Services,Finance,Financial Institution,IFCI,32.12,0.02,0.74
+Financial Services,Financial Services,Finance,Investment Company,JIOFIN,32.12,0.43,0.72
+Financial Services,Financial Services,Finance,Investment Company,ABCAPITAL,32.12,0.13,0.72
+Financial Services,Financial Services,Finance,Investment Company,CHOLAHLDNG,32.12,0.08,0.72
+Financial Services,Financial Services,Finance,Investment Company,MAHSCOOTER,32.12,0.04,0.72
+Financial Services,Financial Services,Finance,Investment Company,TATAINVEST,32.12,0.04,0.72
+Financial Services,Financial Services,Financial Technology (Fintech),Financial Technology (Fintech),POLICYBZR,32.12,0.29,0.53
+Financial Services,Financial Services,Financial Technology (Fintech),Financial Technology (Fintech),PAYTM,32.12,0.24,0.53
+Financial Services,Financial Services,Finance,Housing Finance Company,LICHSGFIN,32.12,0.08,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,PNBHOUSING,32.12,0.08,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,SAMMAANCAP,32.12,0.06,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,APTUS,32.12,0.05,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,HOMEFIRST,32.12,0.05,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,BAJAJHFL,32.12,0.04,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,CANFINHOME,32.12,0.04,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,AADHARHFC,32.12,0.03,0.46
+Financial Services,Financial Services,Finance,Housing Finance Company,AAVAS,32.12,0.03,0.46
+Financial Services,Financial Services,Insurance,General Insurance,ICICIGI,32.12,0.23,0.44
+Financial Services,Financial Services,Insurance,General Insurance,GICRE,32.12,0.06,0.44
+Financial Services,Financial Services,Insurance,General Insurance,STARHEALTH,32.12,0.06,0.44
+Financial Services,Financial Services,Insurance,General Insurance,GODIGIT,32.12,0.04,0.44
+Financial Services,Financial Services,Insurance,General Insurance,NIVABUPA,32.12,0.03,0.44
+Financial Services,Financial Services,Insurance,General Insurance,NIACL,32.12,0.02,0.44
+Financial Services,Financial Services,Capital Markets,Asset Management Company,HDFCAMC,32.12,0.26,0.39
+Financial Services,Financial Services,Capital Markets,Asset Management Company,NAM-INDIA,32.12,0.08,0.39
+Financial Services,Financial Services,Capital Markets,Asset Management Company,ABSLAMC,32.12,0.03,0.39
+Financial Services,Financial Services,Capital Markets,Asset Management Company,UTIAMC,32.12,0.02,0.39
+Financial Services,Financial Services,Capital Markets,Stockbroking & Allied,360ONE,32.12,0.15,0.33999999999999997
+Financial Services,Financial Services,Capital Markets,Stockbroking & Allied,ANGELONE,32.12,0.08,0.33999999999999997
+Financial Services,Financial Services,Capital Markets,Stockbroking & Allied,MOTILALOFS,32.12,0.06,0.33999999999999997
+Financial Services,Financial Services,Capital Markets,Stockbroking & Allied,NUVAMA,32.12,0.05,0.33999999999999997
+Financial Services,Financial Services,Banks,Other Bank,AUBANK,32.12,0.29,0.29
+Financial Services,Financial Services,Capital Markets,Depositories Clearing Houses and Other Intermediaries,CDSL,32.12,0.12,0.28
+Financial Services,Financial Services,Capital Markets,Depositories Clearing Houses and Other Intermediaries,CAMS,32.12,0.09,0.28
+Financial Services,Financial Services,Capital Markets,Depositories Clearing Houses and Other Intermediaries,KFINTECH,32.12,0.07,0.28
+Financial Services,Financial Services,Capital Markets,Financial Products Distributor,ANANDRATHI,32.12,0.06,0.06
+Financial Services,Financial Services,Finance,Other Financial Services,CRISIL,32.12,0.06,0.06
+Financial Services,Financial Services,Finance,Microfinance Institutions,CREDITACC,32.12,0.04,0.04
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,INFY,8.36,2.96,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,TCS,8.36,1.64,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,HCLTECH,8.36,0.92,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,TECHM,8.36,0.57,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,WIPRO,8.36,0.35,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,PERSISTENT,8.36,0.34,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,LTIM,8.36,0.29,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,COFORGE,8.36,0.28,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,MPHASIS,8.36,0.16,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,KPITTECH,8.36,0.09,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,TATAELXSI,8.36,0.09,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,HEXT,8.36,0.05,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,BSOFT,8.36,0.04,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,INTELLECT,8.36,0.04,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,ZENSARTECH,8.36,0.04,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,SONATSOFTW,8.36,0.03,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,HAPPSTMNDS,8.36,0.02,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,LATENTVIEW,8.36,0.02,7.95
+Information Technology,Information Technology,IT - Software,Computers - Software & Consulting,NEWGEN,8.36,0.02,7.95
+Information Technology,Information Technology,IT - Services,IT Enabled Services,TATATECH,8.36,0.06,0.32
+Information Technology,Information Technology,IT - Services,IT Enabled Services,AFFLE,8.36,0.05,0.32
+Information Technology,Information Technology,IT - Services,IT Enabled Services,CYIENT,8.36,0.05,0.32
+Information Technology,Information Technology,IT - Services,IT Enabled Services,LTTS,8.36,0.05,0.32
+Information Technology,Information Technology,IT - Services,IT Enabled Services,IKS,8.36,0.04,0.32
+Information Technology,Information Technology,IT - Services,IT Enabled Services,SAGILITY,8.36,0.04,0.32
+Information Technology,Information Technology,IT - Services,IT Enabled Services,NETWEB,8.36,0.03,0.32
+Information Technology,Information Technology,IT - Software,Software Products,OFSS,8.36,0.09,0.09999999999999999
+Information Technology,Information Technology,IT - Software,Software Products,MAPMYINDIA,8.36,0.01,0.09999999999999999
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Refineries & Marketing,RELIANCE,7.68,4.85,5.77
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Refineries & Marketing,BPCL,7.68,0.36,5.77
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Refineries & Marketing,IOC,7.68,0.31,5.77
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Refineries & Marketing,HINDPETRO,7.68,0.21,5.77
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Refineries & Marketing,CHENNPETRO,7.68,0.02,5.77
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Refineries & Marketing,MRPL,7.68,0.02,5.77
+Energy,Oil Gas & Consumable Fuels,Oil,Oil Exploration & Production,ONGC,7.68,0.54,0.68
+Energy,Oil Gas & Consumable Fuels,Oil,Oil Exploration & Production,OIL,7.68,0.14,0.68
+Energy,Oil Gas & Consumable Fuels,Consumable Fuels,Coal,COALINDIA,7.68,0.51,0.51
+Energy,Oil Gas & Consumable Fuels,Gas,LPG/CNG/PNG/LNG Supplier,PETRONET,7.68,0.11,0.32
+Energy,Oil Gas & Consumable Fuels,Gas,LPG/CNG/PNG/LNG Supplier,ATGL,7.68,0.08,0.32
+Energy,Oil Gas & Consumable Fuels,Gas,LPG/CNG/PNG/LNG Supplier,IGL,7.68,0.06,0.32
+Energy,Oil Gas & Consumable Fuels,Gas,LPG/CNG/PNG/LNG Supplier,GUJGASLTD,7.68,0.04,0.32
+Energy,Oil Gas & Consumable Fuels,Gas,LPG/CNG/PNG/LNG Supplier,MGL,7.68,0.03,0.32
+Energy,Oil Gas & Consumable Fuels,Gas,Gas Transmission/Marketing,GAIL,7.68,0.23,0.28
+Energy,Oil Gas & Consumable Fuels,Gas,Gas Transmission/Marketing,GSPL,7.68,0.05,0.28
+Energy,Oil Gas & Consumable Fuels,Gas,Trading - Gas,AEGISLOG,7.68,0.05,0.05
+Energy,Oil Gas & Consumable Fuels,Petroleum Products,Lubricants,CASTROLIND,7.68,0.05,0.05
+Energy,Oil Gas & Consumable Fuels,Oil,Oil Storage & Transportation,AEGISVOPAK,7.68,0.02,0.02
+Consumer Discretionary,Automobile and Auto Components,Automobiles,Passenger Cars & Utility Vehicles,M&M,7.06,1.58,3.18
+Consumer Discretionary,Automobile and Auto Components,Automobiles,Passenger Cars & Utility Vehicles,MARUTI,7.06,0.99,3.18
+Consumer Discretionary,Automobile and Auto Components,Automobiles,Passenger Cars & Utility Vehicles,TMPV,7.06,0.38,3.18
+Consumer Discretionary,Automobile and Auto Components,Automobiles,Passenger Cars & Utility Vehicles,HYUNDAI,7.06,0.16,3.18
+Consumer Discretionary,Automobile and Auto Components,Automobiles,Passenger Cars & Utility Vehicles,FORCEMOT,7.06,0.05,3.18
+Consumer Discretionary,Automobile and Auto Components,Automobiles,Passenger Cars & Utility Vehicles,OLECTRA,7.06,0.02,3.18
+Consumer Discretionary,Automobile and Auto Components,Automobiles,2/3 Wheelers,BAJAJ-AUTO,7.06,0.55,1.94
+Consumer Discretionary,Automobile and Auto Components,Automobiles,2/3 Wheelers,EICHERMOT,7.06,0.5,1.94
+Consumer Discretionary,Automobile and Auto Components,Automobiles,2/3 Wheelers,TVSMOTOR,7.06,0.44,1.94
+Consumer Discretionary,Automobile and Auto Components,Automobiles,2/3 Wheelers,HEROMOTOCO,7.06,0.37,1.94
+Consumer Discretionary,Automobile and Auto Components,Automobiles,2/3 Wheelers,ATHERENERG,7.06,0.05,1.94
+Consumer Discretionary,Automobile and Auto Components,Automobiles,2/3 Wheelers,OLAELEC,7.06,0.03,1.94
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,MOTHERSON,7.06,0.26,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,BHARATFORG,7.06,0.2,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,BOSCHLTD,7.06,0.16,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,TIINDIA,7.06,0.13,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,SONACOMS,7.06,0.11,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,UNOMINDA,7.06,0.11,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,EXIDEIND,7.06,0.08,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,SCHAEFFLER,7.06,0.07,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,ASAHIINDIA,7.06,0.06,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,MSUMI,7.06,0.06,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,ZFCVINDIA,7.06,0.06,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,ARE&M,7.06,0.05,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,CRAFTSMAN,7.06,0.05,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,SUNDRMFAST,7.06,0.05,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,ENDURANCE,7.06,0.04,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,RKFORGE,7.06,0.03,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,MINDACORP,7.06,0.02,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Auto Components & Equipments,JBMA,7.06,0.01,1.55
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Tyres & Rubber Products,MRF,7.06,0.14,0.38
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Tyres & Rubber Products,BALKRISIND,7.06,0.09,0.38
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Tyres & Rubber Products,APOLLOTYRE,7.06,0.08,0.38
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Tyres & Rubber Products,CEATLTD,7.06,0.04,0.38
+Consumer Discretionary,Automobile and Auto Components,Auto Components,Tyres & Rubber Products,JKTYRE,7.06,0.03,0.38
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,SUNPHARMA,6.1,0.87,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,DIVISLAB,6.1,0.4,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,CIPLA,6.1,0.38,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,DRREDDY,6.1,0.38,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,LUPIN,6.1,0.27,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,TORNTPHARM,6.1,0.21,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,LAURUSLABS,6.1,0.19,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,ALKEM,6.1,0.17,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,AUROPHARMA,6.1,0.17,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,GLENMARK,6.1,0.16,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,BIOCON,6.1,0.13,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,MANKIND,6.1,0.12,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,IPCALAB,6.1,0.11,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,ZYDUSLIFE,6.1,0.11,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,GLAND,6.1,0.08,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,JBCHEPHARM,6.1,0.08,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,ABBOTINDIA,6.1,0.07,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,AJANTPHARM,6.1,0.06,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,NEULANDLAB,6.1,0.06,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,SAILIFE,6.1,0.06,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,WOCKPHARMA,6.1,0.06,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,GLAXO,6.1,0.05,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,PPLPHARMA,6.1,0.05,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,ERIS,6.1,0.04,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,GRANULES,6.1,0.04,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,JUBLPHARMA,6.1,0.04,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,NATCOPHARM,6.1,0.04,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,PFIZER,6.1,0.04,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,ASTRAZEN,6.1,0.03,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,COHANCE,6.1,0.03,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,ONESOURCE,6.1,0.03,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,APLLTD,6.1,0.02,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,CAPLIPOINT,6.1,0.02,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,CONCORDBIO,6.1,0.02,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,EMCURE,6.1,0.02,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,AKUMS,6.1,0.01,4.63
+Healthcare,Healthcare,Pharmaceuticals & Biotechnology,Pharmaceuticals,BLUEJET,6.1,0.01,4.63
+Healthcare,Healthcare,Healthcare Services,Hospital,APOLLOHOSP,6.1,0.37,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,MAXHEALTH,6.1,0.37,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,FORTIS,6.1,0.23,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,KIMS,6.1,0.08,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,ASTERDM,6.1,0.07,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,NH,6.1,0.06,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,MEDANTA,6.1,0.05,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,RAINBOW,6.1,0.03,1.28
+Healthcare,Healthcare,Healthcare Services,Hospital,AGARWALEYE,6.1,0.02,1.28
+Healthcare,Healthcare,Healthcare Services,Healthcare Service Provider,LALPATHLAB,6.1,0.06,0.11
+Healthcare,Healthcare,Healthcare Services,Healthcare Service Provider,METROPOLIS,6.1,0.03,0.11
+Healthcare,Healthcare,Healthcare Services,Healthcare Service Provider,VIJAYA,6.1,0.02,0.11
+Healthcare,Healthcare,Healthcare Services,Healthcare Research Analytics & Technology,SYNGENE,6.1,0.05,0.08
+Healthcare,Healthcare,Healthcare Services,Healthcare Research Analytics & Technology,INDGN,6.1,0.03,0.08
+Healthcare,Healthcare,Healthcare Equipment & Supplies,Medical Equipment & Supplies,POLYMED,6.1,0.03,0.03
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Diversified FMCG,Diversified FMCG,ITC,5.95,1.6,2.68
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Diversified FMCG,Diversified FMCG,HINDUNILVR,5.95,1.08,2.68
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Packaged Foods,NESTLEIND,5.95,0.49,0.8899999999999999
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Packaged Foods,BRITANNIA,5.95,0.36,0.8899999999999999
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Packaged Foods,BBTC,5.95,0.02,0.8899999999999999
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Packaged Foods,BIKAJI,5.95,0.02,0.8899999999999999
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,GODREJCP,5.95,0.24,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,DABUR,5.95,0.15,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,COLPAL,5.95,0.14,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,PGHH,5.95,0.06,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,EMAMILTD,5.95,0.05,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,GILLETTE,5.95,0.04,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Personal Products,Personal Care,HONASA,5.95,0.02,0.7
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Tea & Coffee,TATACONSUM,5.95,0.38,0.42
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Tea & Coffee,CCL,5.95,0.04,0.42
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Beverages,Breweries & Distilleries,UNITDSPR,5.95,0.21,0.37
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Beverages,Breweries & Distilleries,RADICO,5.95,0.11,0.37
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Beverages,Breweries & Distilleries,UBL,5.95,0.05,0.37
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Edible Oil,MARICO,5.95,0.2,0.33999999999999997
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Edible Oil,PATANJALI,5.95,0.09,0.33999999999999997
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Edible Oil,AWL,5.95,0.05,0.33999999999999997
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Beverages,Other Beverages,VBL,5.95,0.33,0.33
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Other Food Products,EIDPARRY,5.95,0.05,0.05
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Cigarettes & Tobacco Products,Cigarettes & Tobacco Products,GODFRYPHLP,5.95,0.04,0.04
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Sugar,BALRAMCHIN,5.95,0.02,0.04
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Sugar,TRIVENI,5.95,0.02,0.04
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Agricultural Food & other Products,Other Agricultural Products,LTFOODS,5.95,0.03,0.03
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Household Products,Stationary,DOMS,5.95,0.02,0.02
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Dairy Products,DUMMYHDLVR,5.95,0.02,0.02
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Household Products,Household Products,JYOTHYLAB,5.95,0.02,0.02
+Fast Moving Consumer Goods,Fast Moving Consumer Goods,Food Products,Animal Feed,GODREJAGRO,5.95,0.01,0.01
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,SUZLON,5.88,0.3,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,CGPOWER,5.88,0.21,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,GVT&D,5.88,0.21,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,BHEL,5.88,0.17,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,ABB,5.88,0.15,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,SIEMENS,5.88,0.14,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,POWERINDIA,5.88,0.12,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,ENRIN,5.88,0.11,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,THERMAX,5.88,0.06,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,INOXWIND,5.88,0.05,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,TRITURBINE,5.88,0.03,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,ELECON,5.88,0.02,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,SCHNEIDER,5.88,0.02,1.6
+Industrials,Capital Goods,Electrical Equipment,Heavy Electrical Equipment,TARIL,5.88,0.01,1.6
+Industrials,Capital Goods,Aerospace & Defense,Aerospace & Defense,BEL,5.88,0.83,1.46
+Industrials,Capital Goods,Aerospace & Defense,Aerospace & Defense,HAL,5.88,0.45,1.46
+Industrials,Capital Goods,Aerospace & Defense,Aerospace & Defense,BDL,5.88,0.07,1.46
+Industrials,Capital Goods,Aerospace & Defense,Aerospace & Defense,DATAPATTNS,5.88,0.04,1.46
+Industrials,Capital Goods,Aerospace & Defense,Aerospace & Defense,GRSE,5.88,0.04,1.46
+Industrials,Capital Goods,Aerospace & Defense,Aerospace & Defense,ZENTEC,5.88,0.03,1.46
+Industrials,Capital Goods,Industrial Products,Compressors Pumps & Diesel Engines,CUMMINSIND,5.88,0.29,0.43
+Industrials,Capital Goods,Industrial Products,Compressors Pumps & Diesel Engines,ELGIEQUIP,5.88,0.05,0.43
+Industrials,Capital Goods,Industrial Products,Compressors Pumps & Diesel Engines,KIRLOSENG,5.88,0.05,0.43
+Industrials,Capital Goods,Industrial Products,Compressors Pumps & Diesel Engines,KIRLOSBROS,5.88,0.02,0.43
+Industrials,Capital Goods,Industrial Products,Compressors Pumps & Diesel Engines,KSB,5.88,0.02,0.43
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,APLAPOLLO,5.88,0.19,0.37
+Industrials,Capital Goods,Industrial Products,Cables - Electricals,POLYCAB,5.88,0.19,0.37
+Industrials,Capital Goods,Industrial Products,Cables - Electricals,KEI,5.88,0.13,0.37
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,WELCORP,5.88,0.05,0.37
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,USHAMART,5.88,0.04,0.37
+Industrials,Capital Goods,Industrial Products,Cables - Electricals,FINCABLES,5.88,0.03,0.37
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,GPIL,5.88,0.03,0.37
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,SHYAMMETL,5.88,0.03,0.37
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,JINDALSAW,5.88,0.02,0.37
+Industrials,Capital Goods,Industrial Products,Cables - Electricals,RRKABEL,5.88,0.02,0.37
+Industrials,Capital Goods,Industrial Products,Iron & Steel Products,MAHSEAMLES,5.88,0.01,0.37
+Industrials,Capital Goods,Agricultural Commercial & Construction Vehicles,Commercial Vehicles,ASHOKLEY,5.88,0.29,0.29
+Industrials,Capital Goods,Electrical Equipment,Other Electrical Equipment,WAAREEENER,5.88,0.14,0.25
+Industrials,Capital Goods,Electrical Equipment,Other Electrical Equipment,APARINDS,5.88,0.07,0.25
+Industrials,Capital Goods,Electrical Equipment,Other Electrical Equipment,PREMIERENE,5.88,0.04,0.25
+Industrials,Capital Goods,Industrial Products,Plastic Products - Industrial,SUPREMEIND,5.88,0.12,0.24
+Industrials,Capital Goods,Industrial Products,Plastic Products - Industrial,ASTRAL,5.88,0.09,0.24
+Industrials,Capital Goods,Industrial Products,Plastic Products - Industrial,FINPIPE,5.88,0.03,0.24
+Industrials,Capital Goods,Industrial Manufacturing,Industrial Products,KAYNES,5.88,0.06,0.19
+Industrials,Capital Goods,Industrial Manufacturing,Industrial Products,HONAUT,5.88,0.04,0.19
+Industrials,Capital Goods,Industrial Manufacturing,Industrial Products,JYOTICNC,5.88,0.04,0.19
+Industrials,Capital Goods,Industrial Manufacturing,Industrial Products,SYRMA,5.88,0.03,0.19
+Industrials,Capital Goods,Industrial Manufacturing,Industrial Products,PRAJIND,5.88,0.02,0.19
+Industrials,Capital Goods,Industrial Manufacturing,Ship Building & Allied Services,MAZDOCK,5.88,0.1,0.17
+Industrials,Capital Goods,Industrial Manufacturing,Ship Building & Allied Services,COCHINSHIP,5.88,0.07,0.17
+Industrials,Capital Goods,Industrial Products,Other Industrial Products,PTCIL,5.88,0.06,0.12
+Industrials,Capital Goods,Industrial Products,Other Industrial Products,HBLENGINE,5.88,0.05,0.12
+Industrials,Capital Goods,Industrial Products,Other Industrial Products,INOXINDIA,5.88,0.01,0.12
+Industrials,Capital Goods,Industrial Products,Abrasives & Bearings,CARBORUNIV,5.88,0.05,0.1
+Industrials,Capital Goods,Industrial Products,Abrasives & Bearings,TIMKEN,5.88,0.05,0.1
+Industrials,Capital Goods,Industrial Products,Castings & Forgings,AIAENG,5.88,0.08,0.08
+Industrials,Capital Goods,Agricultural Commercial & Construction Vehicles,Tractors,ESCORTS,5.88,0.06,0.06
+Industrials,Capital Goods,Agricultural Commercial & Construction Vehicles,Construction Vehicles,BEML,5.88,0.04,0.06
+Industrials,Capital Goods,Agricultural Commercial & Construction Vehicles,Construction Vehicles,ACE,5.88,0.02,0.06
+Industrials,Capital Goods,Industrial Manufacturing,Railway Wagons,TITAGARH,5.88,0.03,0.05
+Industrials,Capital Goods,Industrial Products,Electrodes & Refractories,GRAPHITE,5.88,0.02,0.05
+Industrials,Capital Goods,Industrial Products,Electrodes & Refractories,HEG,5.88,0.02,0.05
+Industrials,Capital Goods,Industrial Manufacturing,Railway Wagons,JWL,5.88,0.02,0.05
+Industrials,Capital Goods,Industrial Products,Electrodes & Refractories,RHIM,5.88,0.01,0.05
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,TATASTEEL,4.21,0.82,1.93
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,JSWSTEEL,4.21,0.59,1.93
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,JINDALSTEL,4.21,0.22,1.93
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,JSL,4.21,0.14,1.93
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,SAIL,4.21,0.11,1.93
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,NSLNISP,4.21,0.03,1.93
+Commodities,Metals & Mining,Ferrous Metals,Iron & Steel,SARDAEN,4.21,0.02,1.93
+Commodities,Metals & Mining,Non - Ferrous Metals,Aluminium,HINDALCO,4.21,0.72,0.8999999999999999
+Commodities,Metals & Mining,Non - Ferrous Metals,Aluminium,NATIONALUM,4.21,0.18,0.8999999999999999
+Commodities,Metals & Mining,Diversified Metals,Diversified Metals,VEDL,4.21,0.59,0.59
+Commodities,Metals & Mining,Metals & Minerals Trading,Trading - Minerals,ADANIENT,4.21,0.27,0.27
+Commodities,Metals & Mining,Minerals & Mining,Industrial Minerals,NMDC,4.21,0.14,0.26
+Commodities,Metals & Mining,Minerals & Mining,Industrial Minerals,LLOYDSME,4.21,0.07,0.26
+Commodities,Metals & Mining,Minerals & Mining,Industrial Minerals,GRAVITA,4.21,0.03,0.26
+Commodities,Metals & Mining,Minerals & Mining,Industrial Minerals,GMDCLTD,4.21,0.02,0.26
+Commodities,Metals & Mining,Non - Ferrous Metals,Zinc,HINDZINC,4.21,0.14,0.14
+Commodities,Metals & Mining,Non - Ferrous Metals,Copper,HINDCOPPER,4.21,0.12,0.12
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Cellular & Fixed line services,BHARTIARTL,3.53,2.82,3.1399999999999997
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Cellular & Fixed line services,IDEA,3.53,0.16,3.1399999999999997
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Cellular & Fixed line services,TATACOMM,3.53,0.09,3.1399999999999997
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Cellular & Fixed line services,BHARTIHEXA,3.53,0.06,3.1399999999999997
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Cellular & Fixed line services,TTML,3.53,0.01,3.1399999999999997
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Infrastructure,INDUSTOWER,3.53,0.3,0.33999999999999997
+Telecommunication,Telecommunication,Telecom - Services,Telecom - Infrastructure,HFCL,3.53,0.04,0.33999999999999997
+Telecommunication,Telecommunication,Telecom - Services,Other Telecom Services,RAILTEL,3.53,0.02,0.02
+Telecommunication,Telecommunication,Telecom - Equipment & Accessories,Telecom - Equipment & Accessories,ITI,3.53,0.01,0.02
+Telecommunication,Telecommunication,Telecom - Equipment & Accessories,Telecom - Equipment & Accessories,TEJASNET,3.53,0.01,0.02
+Consumer Discretionary,Consumer Services,Retailing,E-Retail/ E-Commerce,ETERNAL,3.43,1.01,1.42
+Consumer Discretionary,Consumer Services,Retailing,E-Retail/ E-Commerce,SWIGGY,3.43,0.21,1.42
+Consumer Discretionary,Consumer Services,Retailing,E-Retail/ E-Commerce,NYKAA,3.43,0.17,1.42
+Consumer Discretionary,Consumer Services,Retailing,E-Retail/ E-Commerce,FIRSTCRY,3.43,0.03,1.42
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,INDHOTEL,3.43,0.3,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,ITCHOTELS,3.43,0.09,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,CHALET,3.43,0.03,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,EIHOTEL,3.43,0.03,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,LEMONTREE,3.43,0.03,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,THELEELA,3.43,0.02,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,DBREALTY,3.43,0.01,0.52
+Consumer Discretionary,Consumer Services,Leisure Services,Hotels & Resorts,VENTIVE,3.43,0.01,0.52
+Consumer Discretionary,Consumer Services,Retailing,Speciality Retail,TRENT,3.43,0.43,0.5
+Consumer Discretionary,Consumer Services,Retailing,Speciality Retail,ABLBL,3.43,0.03,0.5
+Consumer Discretionary,Consumer Services,Retailing,Speciality Retail,ABFRL,3.43,0.02,0.5
+Consumer Discretionary,Consumer Services,Retailing,Speciality Retail,MANYAVAR,3.43,0.02,0.5
+Consumer Discretionary,Consumer Services,Retailing,Diversified Retail,DMART,3.43,0.28,0.42000000000000004
+Consumer Discretionary,Consumer Services,Retailing,Diversified Retail,VMM,3.43,0.14,0.42000000000000004
+Consumer Discretionary,Consumer Services,Retailing,Internet & Catalogue Retail,NAUKRI,3.43,0.25,0.28
+Consumer Discretionary,Consumer Services,Retailing,Internet & Catalogue Retail,INDIAMART,3.43,0.03,0.28
+Consumer Discretionary,Consumer Services,Leisure Services,Tour Travel Related Services,IRCTC,3.43,0.1,0.14
+Consumer Discretionary,Consumer Services,Leisure Services,Restaurants,JUBLFOOD,3.43,0.1,0.14
+Consumer Discretionary,Consumer Services,Leisure Services,Tour Travel Related Services,BLS,3.43,0.02,0.14
+Consumer Discretionary,Consumer Services,Leisure Services,Restaurants,DEVYANI,3.43,0.02,0.14
+Consumer Discretionary,Consumer Services,Leisure Services,Restaurants,SAPPHIRE,3.43,0.02,0.14
+Consumer Discretionary,Consumer Services,Leisure Services,Tour Travel Related Services,TBOTEK,3.43,0.02,0.14
+Utilities,Power,Power,Power Generation,NTPC,3.05,0.87,1.5
+Utilities,Power,Power,Power Generation,ADANIGREEN,3.05,0.13,1.5
+Utilities,Power,Power,Power Generation,JSWENERGY,3.05,0.13,1.5
+Utilities,Power,Power,Power Generation,NHPC,3.05,0.13,1.5
+Utilities,Power,Power,Power Generation,JPPOWER,3.05,0.04,1.5
+Utilities,Power,Power,Power Generation,NAVA,3.05,0.04,1.5
+Utilities,Power,Power,Power Generation,NLCINDIA,3.05,0.04,1.5
+Utilities,Power,Power,Power Generation,NTPCGREEN,3.05,0.04,1.5
+Utilities,Power,Power,Power Generation,RPOWER,3.05,0.04,1.5
+Utilities,Power,Power,Power Generation,SJVN,3.05,0.03,1.5
+Utilities,Power,Power,Power Generation,ACMESOLAR,3.05,0.01,1.5
+Utilities,Power,Power,Integrated Power Utilities,TATAPOWER,3.05,0.32,0.8
+Utilities,Power,Power,Integrated Power Utilities,ADANIPOWER,3.05,0.27,0.8
+Utilities,Power,Power,Integrated Power Utilities,TORNTPOWER,3.05,0.14,0.8
+Utilities,Power,Power,Integrated Power Utilities,CESC,3.05,0.05,0.8
+Utilities,Power,Power,Integrated Power Utilities,RELINFRA,3.05,0.02,0.8
+Utilities,Power,Power,Power - Transmission,POWERGRID,3.05,0.6,0.6
+Utilities,Power,Power,Power Distribution,ADANIENSOL,3.05,0.16,0.16
+Industrials,Construction,Construction,Civil Construction,LT,2.83,2.38,2.84
+Industrials,Construction,Construction,Civil Construction,RVNL,2.83,0.1,2.84
+Industrials,Construction,Construction,Civil Construction,KPIL,2.83,0.07,2.84
+Industrials,Construction,Construction,Civil Construction,NBCC,2.83,0.05,2.84
+Industrials,Construction,Construction,Civil Construction,IRB,2.83,0.04,2.84
+Industrials,Construction,Construction,Civil Construction,KEC,2.83,0.04,2.84
+Industrials,Construction,Construction,Civil Construction,AFCONS,2.83,0.03,2.84
+Industrials,Construction,Construction,Civil Construction,IRCON,2.83,0.03,2.84
+Industrials,Construction,Construction,Civil Construction,NCC,2.83,0.03,2.84
+Industrials,Construction,Construction,Civil Construction,TECHNOE,2.83,0.03,2.84
+Industrials,Construction,Construction,Civil Construction,ENGINERSIN,2.83,0.02,2.84
+Industrials,Construction,Construction,Civil Construction,RITES,2.83,0.02,2.84
+Consumer Discretionary,Consumer Durables,Consumer Durables,Gems Jewellery And Watches,TITAN,2.59,0.84,0.9099999999999999
+Consumer Discretionary,Consumer Durables,Consumer Durables,Gems Jewellery And Watches,KALYANKJIL,2.59,0.07,0.9099999999999999
+Consumer Discretionary,Consumer Durables,Consumer Durables,Paints,ASIANPAINT,2.59,0.56,0.6500000000000001
+Consumer Discretionary,Consumer Durables,Consumer Durables,Paints,BERGEPAINT,2.59,0.07,0.6500000000000001
+Consumer Discretionary,Consumer Durables,Consumer Durables,Paints,AKZOINDIA,2.59,0.02,0.6500000000000001
+Consumer Discretionary,Consumer Durables,Consumer Durables,Household Appliances,VOLTAS,2.59,0.16,0.46
+Consumer Discretionary,Consumer Durables,Consumer Durables,Household Appliances,BLUESTARCO,2.59,0.12,0.46
+Consumer Discretionary,Consumer Durables,Consumer Durables,Household Appliances,CROMPTON,2.59,0.07,0.46
+Consumer Discretionary,Consumer Durables,Consumer Durables,Household Appliances,AMBER,2.59,0.06,0.46
+Consumer Discretionary,Consumer Durables,Consumer Durables,Household Appliances,VGUARD,2.59,0.03,0.46
+Consumer Discretionary,Consumer Durables,Consumer Durables,Household Appliances,WHIRLPOOL,2.59,0.02,0.46
+Consumer Discretionary,Consumer Durables,Consumer Durables,Consumer Electronics,DIXON,2.59,0.22,0.44
+Consumer Discretionary,Consumer Durables,Consumer Durables,Consumer Electronics,HAVELLS,2.59,0.17,0.44
+Consumer Discretionary,Consumer Durables,Consumer Durables,Consumer Electronics,PGEL,2.59,0.05,0.44
+Consumer Discretionary,Consumer Durables,Consumer Durables,Ceramics,KAJARIACER,2.59,0.04,0.04
+Consumer Discretionary,Consumer Durables,Consumer Durables,Footwear,BATAINDIA,2.59,0.03,0.04
+Consumer Discretionary,Consumer Durables,Consumer Durables,Footwear,CAMPUS,2.59,0.01,0.04
+Consumer Discretionary,Consumer Durables,Consumer Durables,Plywood Boards/ Laminates,CENTURYPLY,2.59,0.03,0.03
+Consumer Discretionary,Consumer Durables,Consumer Durables,Sanitary Ware,CERA,2.59,0.01,0.01
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,ULTRACEMCO,2.05,0.77,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,GRASIM,2.05,0.55,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,SHREECEM,2.05,0.19,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,AMBUJACEM,2.05,0.16,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,JKCEMENT,2.05,0.12,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,DALBHARAT,2.05,0.08,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,RAMCOCEM,2.05,0.07,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,ACC,2.05,0.05,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,INDIACEM,2.05,0.02,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,NUVOCO,2.05,0.02,2.04
+Commodities,Construction Materials,Cement & Cement Products,Cement & Cement Products,JSWCEMENT,2.05,0.01,2.04
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,PIDILITIND,1.89,0.23,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,NAVINFLUOR,1.89,0.12,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,FLUOROCHEM,1.89,0.07,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,DEEPAKNTR,1.89,0.06,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,ATUL,1.89,0.05,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,AARTIIND,1.89,0.04,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,JUBLINGREA,1.89,0.03,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,BASF,1.89,0.02,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,CLEAN,1.89,0.02,0.65
+Commodities,Chemicals,Chemicals & Petrochemicals,Specialty Chemicals,ALKYLAMINE,1.89,0.01,0.65
+Commodities,Chemicals,Fertilizers & Agrochemicals,Pesticides & Agrochemicals,UPL,1.89,0.2,0.39
+Commodities,Chemicals,Fertilizers & Agrochemicals,Pesticides & Agrochemicals,PIIND,1.89,0.13,0.39
+Commodities,Chemicals,Fertilizers & Agrochemicals,Pesticides & Agrochemicals,BAYERCROP,1.89,0.03,0.39
+Commodities,Chemicals,Fertilizers & Agrochemicals,Pesticides & Agrochemicals,SUMICHEM,1.89,0.03,0.39
+Commodities,Chemicals,Chemicals & Petrochemicals,Commodity Chemicals,SRF,1.89,0.21,0.31
+Commodities,Chemicals,Chemicals & Petrochemicals,Commodity Chemicals,TATACHEM,1.89,0.06,0.31
+Commodities,Chemicals,Chemicals & Petrochemicals,Commodity Chemicals,DEEPAKFERT,1.89,0.04,0.31
+Commodities,Chemicals,Fertilizers & Agrochemicals,Fertilizers,COROMANDEL,1.89,0.14,0.21000000000000002
+Commodities,Chemicals,Fertilizers & Agrochemicals,Fertilizers,CHAMBLFERT,1.89,0.03,0.21000000000000002
+Commodities,Chemicals,Fertilizers & Agrochemicals,Fertilizers,FACT,1.89,0.03,0.21000000000000002
+Commodities,Chemicals,Fertilizers & Agrochemicals,Fertilizers,RCF,1.89,0.01,0.21000000000000002
+Commodities,Chemicals,Chemicals & Petrochemicals,Explosives,SOLARINDS,1.89,0.17,0.17
+Commodities,Chemicals,Chemicals & Petrochemicals,Carbon Black,HSCL,1.89,0.06,0.08
+Commodities,Chemicals,Chemicals & Petrochemicals,Carbon Black,PCBL,1.89,0.02,0.08
+Commodities,Chemicals,Chemicals & Petrochemicals,Industrial Gases,LINDEINDIA,1.89,0.07,0.07
+Commodities,Chemicals,Chemicals & Petrochemicals,Petrochemicals,SWANCORP,1.89,0.03,0.03
+Services,Services,Transport Infrastructure,Port & Port services,ADANIPORTS,1.8,0.54,0.5800000000000001
+Services,Services,Transport Infrastructure,Port & Port services,JSWINFRA,1.8,0.04,0.5800000000000001
+Services,Services,Transport Services,Airline,INDIGO,1.8,0.53,0.53
+Services,Services,Transport Services,Logistics Solution Provider,DELHIVERY,1.8,0.12,0.22999999999999998
+Services,Services,Transport Services,Logistics Solution Provider,CONCOR,1.8,0.09,0.22999999999999998
+Services,Services,Transport Services,Logistics Solution Provider,BLUEDART,1.8,0.02,0.22999999999999998
+Services,Services,Transport Infrastructure,Airport & Airport services,GMRAIRPORT,1.8,0.17,0.17
+Services,Services,Commercial Services & Supplies,Business Process Outsourcing (BPO)/ Knowledge Process Outsourcing (KPO),ECLERX,1.8,0.05,0.1
+Services,Services,Commercial Services & Supplies,Business Process Outsourcing (BPO)/ Knowledge Process Outsourcing (KPO),FSL,1.8,0.05,0.1
+Services,Services,Commercial Services & Supplies,Trading & Distributors,REDINGTON,1.8,0.08,0.09
+Services,Services,Commercial Services & Supplies,Trading & Distributors,MMTC,1.8,0.01,0.09
+Services,Services,Transport Services,Shipping,GESHIP,1.8,0.06,0.08
+Services,Services,Transport Services,Shipping,SCI,1.8,0.02,0.08
+Services,Services,Commercial Services & Supplies,Diversified Commercial Services,IGIL,1.8,0.02,0.02
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,DLF,0.99,0.21,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,PHOENIXLTD,0.99,0.16,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,LODHA,0.99,0.14,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,PRESTIGE,0.99,0.13,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,GODREJPROP,0.99,0.12,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,OBEROIRLTY,0.99,0.09,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,BRIGADE,0.99,0.05,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,ANANTRAJ,0.99,0.04,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,SOBHA,0.99,0.03,0.99
+Consumer Discretionary,Realty,Realty,Residential Commercial Projects,SIGNATURE,0.99,0.02,0.99
+Consumer Discretionary,Textiles,Textiles & Apparels,Other Textile Products,KPRMILL,0.23,0.05,0.12000000000000001
+Consumer Discretionary,Textiles,Textiles & Apparels,Other Textile Products,TRIDENT,0.23,0.02,0.12000000000000001
+Consumer Discretionary,Textiles,Textiles & Apparels,Other Textile Products,VTL,0.23,0.02,0.12000000000000001
+Consumer Discretionary,Textiles,Textiles & Apparels,Other Textile Products,WELSPUNLIV,0.23,0.02,0.12000000000000001
+Consumer Discretionary,Textiles,Textiles & Apparels,Other Textile Products,ALOKINDS,0.23,0.01,0.12000000000000001
+Consumer Discretionary,Textiles,Textiles & Apparels,Garments & Apparels,PAGEIND,0.23,0.11,0.11
+Consumer Discretionary,Media Entertainment & Publication,Entertainment,TV Broadcasting & Software Production,ZEEL,0.12,0.04,0.07
+Consumer Discretionary,Media Entertainment & Publication,Entertainment,TV Broadcasting & Software Production,SUNTV,0.12,0.03,0.07
+Consumer Discretionary,Media Entertainment & Publication,Entertainment,Film Production Distribution & Exhibition,PVRINOX,0.12,0.04,0.04
+Consumer Discretionary,Media Entertainment & Publication,Entertainment,Media & Entertainment,SAREGAMA,0.12,0.01,0.01
+Diversified,Diversified,Diversified,Diversified,3MINDIA,0.1,0.05,0.09
+Diversified,Diversified,Diversified,Diversified,DCMSHRIRAM,0.1,0.02,0.09
+Diversified,Diversified,Diversified,Diversified,GODREJIND,0.1,0.02,0.09
+Commodities,Forest Materials,Paper Forest & Jute Products,Paper & Paper Products,ABREL,0.03,0.03,0.03
